@@ -1,3 +1,102 @@
+### Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+### Build output
+dist/
+dist-*/
+out-tsc/
+coverage/
+tmp/
+temp/
+
+### Angular
+.angular/
+/.angular/cache/
+
+### Production
+build/
+release/
+
+### System files
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Icon?
+
+### Environment
+.env
+.env.*
+env.local
+local.env
+/.env
+
+### Logs
+*.log
+npm-debug.log*
+lerna-debug.log*
+
+### IDEs and editors
+.idea/
+*.sublime-workspace
+*.sublime-project
+.vscode/
+*.code-workspace
+
+### JetBrains
+/.idea/
+*.iml
+
+### Mac
+.Spotlight-V100
+.Trashes
+
+### Windows
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+### TypeScript
+*.tsbuildinfo
+
+### Compiled output
+*.class
+*.exe
+*.dll
+
+### Temporary files
+*.tmp
+*.temp
+~$*
+
+### Package managers
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+### Generated files
+/.eslintcache
+/.parcel-cache
+
+### SSG / Tools
+.cache/
+public/
+
+### Misc
+.sass-cache
+/.pnp
+.pnp.js
+
+# Local angular environment overrides
+src/environments/environment.*.ts
+
+# Editor specific
+history/
 # Angular specific
 /dist/
 /out-tsc/

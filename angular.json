@@ -1,0 +1,11 @@
+{
+  "$schema": "https://angular.io/cli/schema.json",
+  "version": 1,
+  "projects": {
+    "creaprint-frontend": {
+      "projectType": "application",
+      "root": "",
+      "sourceRoot": "src"
+    }
+  }
+}

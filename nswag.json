@@ -1,0 +1,29 @@
+{
+  "runtime": "Net80",
+  "documentGenerator": {
+    "fromUrl": {
+      "url": "https://localhost:44366/swagger/v1/swagger.json",
+      "output": null,
+      "allowInsecure": true
+    }
+  },
+  "codeGenerators": {
+    "openApiToTypeScriptClient": {
+      "className": "ApiClient",
+      "moduleName": "",
+      "namespace": "",
+      "typeScriptVersion": 4.8,
+      "template": "Axios",
+      "promiseType": "Promise",
+      "httpClass": "Axios",
+      "useAbortSignal": false,
+      "generateClientClasses": true,
+      "generateClientInterfaces": false,
+      "generateDtoTypes": true,
+      "dtoTypeGenerationMode": "Interface",
+      "generateOptionalParameters": true,
+      "generateRequestBody": true,
+      "output": "src/api/api-client.ts"
+    }
+  }
+}
