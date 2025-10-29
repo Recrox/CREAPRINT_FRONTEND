@@ -25,13 +25,13 @@ import { apiClient } from '../api-client';
     .article-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 2rem;
+      gap: 1rem;
       width: 100%;
       margin-top: 1rem;
     }
     .article-card {
       width: 100%;
-      max-width: 400px;
+      max-width: 300px;
       margin: auto;
     }
   `]

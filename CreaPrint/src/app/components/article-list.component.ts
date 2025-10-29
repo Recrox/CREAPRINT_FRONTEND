@@ -8,7 +8,6 @@ import { apiClient } from '../api-client';
 import { ArticleDetailComponent } from './article-detail.component';
 import { ArticleGridComponent } from './article-grid.component';
 import { ArticleTableComponent } from './article-table.component';
-import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
@@ -48,8 +47,7 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class ArticleListComponent implements OnInit {
   articles: apiClient.Article[] = [];
-  loading = true;
-  // displayedColumns déplacé dans ArticleTableComponent
+  loading : boolean = true;
   selectedArticle?: apiClient.Article;
   isGridMode = false;
 
@@ -58,6 +56,9 @@ export class ArticleListComponent implements OnInit {
   ngOnInit(): void {
     this.articleService.getAllArticles().subscribe({
       next: (data) => {
+        console.log(data);
+        console.log(this.loading);
+        
         if (Array.isArray(data)) {
           this.articles = data;
         } else {

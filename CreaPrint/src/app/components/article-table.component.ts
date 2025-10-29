@@ -7,7 +7,7 @@ import { apiClient } from '../api-client';
 @Component({
   selector: 'app-article-table',
   standalone: true,
-  imports: [CommonModule, MatTableModule, RouterLink],
+  imports: [CommonModule, MatTableModule],
   template: `
     <table mat-table [dataSource]="articles" class="mat-elevation-z1" style="width:100%;min-width:600px;">
       <ng-container matColumnDef="title">
