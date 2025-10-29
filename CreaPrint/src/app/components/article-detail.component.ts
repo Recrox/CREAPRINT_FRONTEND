@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { apiClient } from '../api-client';
@@ -8,7 +8,7 @@ import { apiClient } from '../api-client';
   standalone: true,
   imports: [CommonModule, MatCardModule],
   template: `
-  <mat-card *ngIf="article" style="padding:2rem;">
+    <mat-card *ngIf="article" style="padding:2rem;">
       <mat-card-header>
         <mat-card-title>{{ article.title }}</mat-card-title>
         <mat-card-subtitle>{{ article.category }}</mat-card-subtitle>
@@ -19,10 +19,12 @@ import { apiClient } from '../api-client';
       <mat-card-content>
         <p>{{ article.content }}</p>
       </mat-card-content>
+      <button mat-button color="primary" style="margin-top:2rem;" (click)="back.emit()">Retour à la liste</button>
     </mat-card>
     <div *ngIf="!article">Aucun article sélectionné.</div>
   `
 })
 export class ArticleDetailComponent {
   @Input() article?: apiClient.Article;
+  @Output() back = new EventEmitter<void>();
 }
