@@ -4,36 +4,108 @@
 // components according to the Material 3 design spec.
 // Learn more about theming and how to use it for your application's
 // custom components at https://material.angular.dev/guide/theming
+
 @use '@angular/material' as mat;
 
-html {
-  @include mat.theme((
-    color: (
-      primary: mat.$azure-palette,
-      tertiary: mat.$blue-palette,
-    ),
-    typography: Roboto,
-    density: 0,
-  ));
-}
 
-body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
-  color-scheme: light;
+$creaprint-theme: mat.define-theme((
+  color: (
+    primary: mat.$blue-palette,
+    accent: mat.$cyan-palette,
+    warn: mat.$red-palette,
+  ),
+  typography: mat.$typography,
+  density: 0,
+));
 
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-  font: var(--mat-sys-body-medium);
+@include mat.all-component-themes($creaprint-theme);
 
-  // Reset the user agent margin.
-  margin: 0;
-}
+
+
+// ...existing code...
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+// Palette Azure/bleu moderne + accents
+$primary: #1976d2;
+$primary-dark: #115293;
+$accent: #00bcd4;
+$background: #e6eef7;
+$surface: #f5f7fa;
+$text: #222;
+$header-bg: $primary;
+$header-text: #fff;
+$sidebar-bg: #e3eaf3;
+$sidebar-active: $primary;
+$card-bg: $surface;
+$card-shadow: 0 2px 8px rgba(25, 118, 210, 0.08);
+
+body {
+  background: $background;
+  color: $text;
+  font-family: 'Inter', 'Roboto', Arial, sans-serif;
+  margin: 0;
+}
+
+mat-toolbar.header-toolbar {
+  background: $header-bg !important;
+  color: $header-text !important;
+  box-shadow: $card-shadow;
+}
+
+.logo {
+  color: $header-text;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+nav button.active {
+  background: $accent;
+  color: #fff;
+}
+
+mat-sidenav.sidebar {
+  background: $sidebar-bg;
+  border-right: 1px solid #cfd8dc;
+}
+
+.sidebar .active {
+  color: $sidebar-active;
+  font-weight: bold;
+}
+
+mat-card {
+  background: $card-bg;
+  box-shadow: $card-shadow;
+  border-radius: 12px;
+}
+
+mat-card-title, mat-card-subtitle {
+  color: $primary-dark;
+}
+
+button.mat-raised-button, button.mat-button {
+  background: $primary;
+  color: #fff;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+button.mat-raised-button:hover, button.mat-button:hover {
+  background: $accent;
+}
+
+.mat-elevation-z1 {
+  box-shadow: $card-shadow !important;
+}
+
+// Responsive tweaks
+@media (max-width: 600px) {
+  mat-card {
+    margin: 0.5rem;
+    padding: 1rem;
+  }
+  .sidebar {
+    width: 100px;
+  }
+}
