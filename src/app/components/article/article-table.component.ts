@@ -2,7 +2,7 @@ import { Component, Input, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
-import { apiClient } from '../../api-client';
+import * as apiClient from '../../api-client';
 
 @Component({
   selector: 'app-article-table',
@@ -10,6 +10,10 @@ import { apiClient } from '../../api-client';
   imports: [CommonModule, MatTableModule, MatSortModule],
   template: `
   <table mat-table [dataSource]="articlesList" matSort class="mat-elevation-z1" style="width:100%;min-width:600px;">
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+        <td mat-cell *matCellDef="let article">{{ article.id }}</td>
+      </ng-container>
       <ng-container matColumnDef="title">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Titre</th>
         <td mat-cell *matCellDef="let article">
@@ -22,7 +26,7 @@ import { apiClient } from '../../api-client';
       </ng-container>
       <ng-container matColumnDef="category">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Catégorie</th>
-        <td mat-cell *matCellDef="let article">{{ article.category }}</td>
+        <td mat-cell *matCellDef="let article">{{ article.category?.name || '—' }}</td>
       </ng-container>
       <ng-container matColumnDef="price">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Prix (€)</th>
@@ -34,11 +38,11 @@ import { apiClient } from '../../api-client';
   `
 })
 export class ArticleTableComponent {
-  @Input() articles: apiClient.Article[] | Signal<apiClient.Article[]> = [];
-  @Input() selectArticle!: (article: apiClient.Article) => void;
-  displayedColumns: string[] = ['title', 'content', 'category', 'price'];
+  @Input() articles: apiClient.apiClient.Article[] | Signal<apiClient.apiClient.Article[]> = [];
+  @Input() selectArticle!: (article: apiClient.apiClient.Article) => void;
+  displayedColumns: string[] = ['id', 'title', 'content', 'category', 'price'];
 
-  get articlesList(): apiClient.Article[] {
+  get articlesList(): apiClient.apiClient.Article[] {
     if (typeof this.articles === 'function') {
       return this.articles();
     }

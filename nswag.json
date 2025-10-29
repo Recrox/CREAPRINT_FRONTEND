@@ -11,7 +11,7 @@
   "codeGenerators": {
     "openApiToTypeScriptClient": {
       "className": "ApiClient",
-      "moduleName": "api-client",
+      "moduleName": "apiClient",
       "namespace": "",
       "typeScriptVersion": 5.0,
       "template": "Axios",

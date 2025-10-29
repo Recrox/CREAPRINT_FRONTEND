@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
-import { apiClient } from '../../api-client';
+import * as apiClient from '../../api-client';
 
 @Component({
   selector: 'app-article-detail',
@@ -11,7 +11,10 @@ import { apiClient } from '../../api-client';
     <mat-card *ngIf="article" style="padding:2rem;">
       <mat-card-header>
         <mat-card-title>{{ article.title }}</mat-card-title>
-        <mat-card-subtitle>{{ article.category }}</mat-card-subtitle>
+        <mat-card-subtitle>
+          Catégorie : {{ article.category?.name || '—' }}
+          <span *ngIf="article.categoryId"> (ID: {{ article.categoryId }})</span>
+        </mat-card-subtitle>
       </mat-card-header>
       <div style="width:100%;display:flex;justify-content:center;align-items:center;">
         <img mat-card-image src="https://placehold.co/400x200?text=Image+Article" alt="Image de l'article" style="max-width:400px;max-height:200px;object-fit:cover;border-radius:8px;" />
@@ -25,6 +28,6 @@ import { apiClient } from '../../api-client';
   `
 })
 export class ArticleDetailComponent {
-  @Input() article?: apiClient.Article;
+  @Input() article?: apiClient.apiClient.Article;
   @Output() back = new EventEmitter<void>();
 }

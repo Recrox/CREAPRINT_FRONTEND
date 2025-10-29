@@ -1,7 +1,7 @@
 import { Component, Input, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
-import { apiClient } from '../../api-client';
+import * as apiClient from '../../api-client';
 
 @Component({
   selector: 'app-article-grid',
@@ -12,8 +12,8 @@ import { apiClient } from '../../api-client';
       <mat-card *ngFor="let article of articlesList" class="article-card">
         <img mat-card-image src="https://placehold.co/400x200?text=Image+Article" alt="Image de l'article" />
         <mat-card-header>
-          <mat-card-title>{{ article.title }}</mat-card-title>
-          <mat-card-subtitle>{{ article.category }}</mat-card-subtitle>
+          <mat-card-title>#{{ article.id }} - {{ article.title }}</mat-card-title>
+          <mat-card-subtitle>{{ article.category?.name || 'Sans catégorie' }}</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
           <p>{{ article.content }}</p>
@@ -38,9 +38,9 @@ import { apiClient } from '../../api-client';
   `]
 })
 export class ArticleGridComponent {
-  @Input() articles: apiClient.Article[] | Signal<apiClient.Article[]> = [];
+  @Input() articles: apiClient.apiClient.Article[] | Signal<apiClient.apiClient.Article[]> = [];
 
-  get articlesList(): apiClient.Article[] {
+  get articlesList(): apiClient.apiClient.Article[] {
     if (typeof this.articles === 'function') {
       return this.articles();
     }
