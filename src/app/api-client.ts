@@ -16,22 +16,22 @@ export interface IApiClient {
     /**
      * @return OK
      */
-    articlesAll( cancelToken?: CancelToken): Promise<ArticleDto[]>;
+    articlesAll( cancelToken?: CancelToken): Promise<Article[]>;
     /**
      * @param body (optional) 
      * @return OK
      */
-    articlesPOST(body?: Article | undefined,  cancelToken?: CancelToken): Promise<ArticleDto>;
+    articlesPOST(body?: Article | undefined,  cancelToken?: CancelToken): Promise<Article>;
     /**
      * @return OK
      */
-    articlesGET(id: number,  cancelToken?: CancelToken): Promise<ArticleDto>;
+    articlesGET(id: number,  cancelToken?: CancelToken): Promise<Article>;
     /**
      * @param page (optional) 
      * @param pageSize (optional) 
      * @return OK
      */
-    paged(page?: number | undefined, pageSize?: number | undefined,  cancelToken?: CancelToken): Promise<ArticleDto[]>;
+    paged(page?: number | undefined, pageSize?: number | undefined,  cancelToken?: CancelToken): Promise<Article[]>;
     /**
      * @return OK
      */
@@ -54,7 +54,7 @@ export class ApiClient implements IApiClient {
     /**
      * @return OK
      */
-    articlesAll( cancelToken?: CancelToken): Promise<ArticleDto[]> {
+    articlesAll( cancelToken?: CancelToken): Promise<Article[]> {
         let url_ = this.baseUrl + "/api/Articles";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -78,7 +78,7 @@ export class ApiClient implements IApiClient {
         });
     }
 
-    protected processArticlesAll(response: AxiosResponse): Promise<ArticleDto[]> {
+    protected processArticlesAll(response: AxiosResponse): Promise<Article[]> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -95,25 +95,25 @@ export class ApiClient implements IApiClient {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(ArticleDto.fromJS(item));
+                    result200!.push(Article.fromJS(item));
             }
             else {
                 result200 = null as any;
             }
-            return Promise.resolve<ArticleDto[]>(result200);
+            return Promise.resolve<Article[]>(result200);
 
         } else if (status !== 200 && status !== 204) {
             const _responseText = response.data;
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
-        return Promise.resolve<ArticleDto[]>(null as any);
+        return Promise.resolve<Article[]>(null as any);
     }
 
     /**
      * @param body (optional) 
      * @return OK
      */
-    articlesPOST(body?: Article | undefined, cancelToken?: CancelToken): Promise<ArticleDto> {
+    articlesPOST(body?: Article | undefined, cancelToken?: CancelToken): Promise<Article> {
         let url_ = this.baseUrl + "/api/Articles";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -141,7 +141,7 @@ export class ApiClient implements IApiClient {
         });
     }
 
-    protected processArticlesPOST(response: AxiosResponse): Promise<ArticleDto> {
+    protected processArticlesPOST(response: AxiosResponse): Promise<Article> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -155,20 +155,20 @@ export class ApiClient implements IApiClient {
             const _responseText = response.data;
             let result200: any = null;
             let resultData200  = _responseText;
-            result200 = ArticleDto.fromJS(resultData200);
-            return Promise.resolve<ArticleDto>(result200);
+            result200 = Article.fromJS(resultData200);
+            return Promise.resolve<Article>(result200);
 
         } else if (status !== 200 && status !== 204) {
             const _responseText = response.data;
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
-        return Promise.resolve<ArticleDto>(null as any);
+        return Promise.resolve<Article>(null as any);
     }
 
     /**
      * @return OK
      */
-    articlesGET(id: number, cancelToken?: CancelToken): Promise<ArticleDto> {
+    articlesGET(id: number, cancelToken?: CancelToken): Promise<Article> {
         let url_ = this.baseUrl + "/api/Articles/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
@@ -195,7 +195,7 @@ export class ApiClient implements IApiClient {
         });
     }
 
-    protected processArticlesGET(response: AxiosResponse): Promise<ArticleDto> {
+    protected processArticlesGET(response: AxiosResponse): Promise<Article> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -209,14 +209,14 @@ export class ApiClient implements IApiClient {
             const _responseText = response.data;
             let result200: any = null;
             let resultData200  = _responseText;
-            result200 = ArticleDto.fromJS(resultData200);
-            return Promise.resolve<ArticleDto>(result200);
+            result200 = Article.fromJS(resultData200);
+            return Promise.resolve<Article>(result200);
 
         } else if (status !== 200 && status !== 204) {
             const _responseText = response.data;
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
-        return Promise.resolve<ArticleDto>(null as any);
+        return Promise.resolve<Article>(null as any);
     }
 
     /**
@@ -224,7 +224,7 @@ export class ApiClient implements IApiClient {
      * @param pageSize (optional) 
      * @return OK
      */
-    paged(page?: number | undefined, pageSize?: number | undefined, cancelToken?: CancelToken): Promise<ArticleDto[]> {
+    paged(page?: number | undefined, pageSize?: number | undefined, cancelToken?: CancelToken): Promise<Article[]> {
         let url_ = this.baseUrl + "/api/Articles/paged?";
         if (page === null)
             throw new globalThis.Error("The parameter 'page' cannot be null.");
@@ -256,7 +256,7 @@ export class ApiClient implements IApiClient {
         });
     }
 
-    protected processPaged(response: AxiosResponse): Promise<ArticleDto[]> {
+    protected processPaged(response: AxiosResponse): Promise<Article[]> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -273,18 +273,18 @@ export class ApiClient implements IApiClient {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(ArticleDto.fromJS(item));
+                    result200!.push(Article.fromJS(item));
             }
             else {
                 result200 = null as any;
             }
-            return Promise.resolve<ArticleDto[]>(result200);
+            return Promise.resolve<Article[]>(result200);
 
         } else if (status !== 200 && status !== 204) {
             const _responseText = response.data;
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
-        return Promise.resolve<ArticleDto[]>(null as any);
+        return Promise.resolve<Article[]>(null as any);
     }
 
     /**
@@ -412,62 +412,6 @@ export interface IArticle {
     category?: Category;
 }
 
-export class ArticleDto implements IArticleDto {
-    id?: number;
-    title?: string | undefined;
-    content?: string | undefined;
-    price?: number;
-    categoryId?: number | undefined;
-    category?: CategoryDto;
-
-    constructor(data?: IArticleDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.title = _data["title"];
-            this.content = _data["content"];
-            this.price = _data["price"];
-            this.categoryId = _data["categoryId"];
-            this.category = _data["category"] ? CategoryDto.fromJS(_data["category"]) : undefined as any;
-        }
-    }
-
-    static fromJS(data: any): ArticleDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new ArticleDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["title"] = this.title;
-        data["content"] = this.content;
-        data["price"] = this.price;
-        data["categoryId"] = this.categoryId;
-        data["category"] = this.category ? this.category.toJSON() : undefined as any;
-        return data;
-    }
-}
-
-export interface IArticleDto {
-    id?: number;
-    title?: string | undefined;
-    content?: string | undefined;
-    price?: number;
-    categoryId?: number | undefined;
-    category?: CategoryDto;
-}
-
 export class Category implements ICategory {
     id?: number;
     createdBy?: string | undefined;
@@ -534,46 +478,6 @@ export interface ICategory {
     updatedOn?: Date | undefined;
     name: string | undefined;
     articles?: Article[] | undefined;
-}
-
-export class CategoryDto implements ICategoryDto {
-    id?: number;
-    name?: string | undefined;
-
-    constructor(data?: ICategoryDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (this as any)[property] = (data as any)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.name = _data["name"];
-        }
-    }
-
-    static fromJS(data: any): CategoryDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new CategoryDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["name"] = this.name;
-        return data;
-    }
-}
-
-export interface ICategoryDto {
-    id?: number;
-    name?: string | undefined;
 }
 
 export class SwaggerException extends Error {
