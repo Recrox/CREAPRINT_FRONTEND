@@ -17,8 +17,8 @@ import { MatIconModule } from '@angular/material/icon';
   standalone: true,
   imports: [CommonModule, FormsModule, MatCardModule, MatListModule, MatTableModule, ArticleDetailComponent, ArticleGridComponent, MatSlideToggleModule, MatIconModule],
   template: `
-  <mat-card style="width:100%;max-width:none;margin-bottom:3rem;">
-      <mat-card-title>Liste des articles</mat-card-title>
+  <mat-card style="width:100%;max-width:none;margin-bottom:3rem;padding:2rem;">
+  <mat-card-title style="text-align:center;">Liste des articles</mat-card-title>
       <mat-card-content>
         <div style="margin-bottom:1rem; display: flex; align-items: center; gap: 1rem;">
           <mat-slide-toggle color="primary" [(ngModel)]="isGridMode" style="margin-right: 1rem;">

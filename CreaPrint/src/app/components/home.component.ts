@@ -7,7 +7,7 @@ import { MatCardModule } from '@angular/material/card';
   standalone: true,
   imports: [CommonModule, MatCardModule],
   template: `
-    <mat-card class="home-card">
+  <mat-card class="home-card" style="padding:2rem;">
       <mat-card-title>Accueil</mat-card-title>
       <mat-card-content>
         <h2>Bienvenue sur CreaPrint !</h2>

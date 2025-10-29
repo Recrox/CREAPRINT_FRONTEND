@@ -8,7 +8,7 @@ import { apiClient } from '../api-client';
   standalone: true,
   imports: [CommonModule, MatCardModule],
   template: `
-    <mat-card *ngIf="article">
+  <mat-card *ngIf="article" style="padding:2rem;">
       <mat-card-header>
         <mat-card-title>{{ article.title }}</mat-card-title>
         <mat-card-subtitle>{{ article.category }}</mat-card-subtitle>

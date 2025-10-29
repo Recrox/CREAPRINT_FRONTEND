@@ -7,7 +7,7 @@ import { MatCardModule } from '@angular/material/card';
   standalone: true,
   imports: [CommonModule, MatCardModule],
   template: `
-    <mat-card class="about-card">
+  <mat-card class="about-card" style="padding:2rem;">
       <mat-card-title>À propos</mat-card-title>
       <mat-card-content>
         <p>
