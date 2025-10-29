@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
-import { apiClient } from '../api-client';
+import { apiClient } from '../../api-client';
 
 @Component({
   selector: 'app-article-detail',

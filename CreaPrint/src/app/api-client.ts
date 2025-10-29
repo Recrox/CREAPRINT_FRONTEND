@@ -10,7 +10,7 @@
 import axios, { AxiosError } from 'axios';
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, CancelToken } from 'axios';
 
-export namespace apiClient {
+export module apiClient {
 
 export interface IApiClient {
     /**
@@ -219,6 +219,7 @@ export class Article implements IArticle {
     title!: string | undefined;
     content!: string | undefined;
     category!: string | undefined;
+    price!: number;
 
     constructor(data?: IArticle) {
         if (data) {
@@ -239,6 +240,7 @@ export class Article implements IArticle {
             this.title = _data["title"];
             this.content = _data["content"];
             this.category = _data["category"];
+            this.price = _data["price"];
         }
     }
 
@@ -259,6 +261,7 @@ export class Article implements IArticle {
         data["title"] = this.title;
         data["content"] = this.content;
         data["category"] = this.category;
+        data["price"] = this.price;
         return data;
     }
 }
@@ -272,6 +275,7 @@ export interface IArticle {
     title: string | undefined;
     content: string | undefined;
     category: string | undefined;
+    price: number;
 }
 
 export class SwaggerException extends Error {
