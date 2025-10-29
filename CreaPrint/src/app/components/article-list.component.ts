@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
@@ -51,24 +51,23 @@ export class ArticleListComponent implements OnInit {
   selectedArticle?: apiClient.Article;
   isGridMode = false;
 
-  constructor(private articleService: ArticleService) {}
+  constructor(private articleService: ArticleService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.articleService.getAllArticles().subscribe({
       next: (data) => {
-        console.log(data);
-        console.log(this.loading);
-        
         if (Array.isArray(data)) {
           this.articles = data;
         } else {
           this.articles = [];
         }
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.articles = [];
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -76,4 +75,33 @@ export class ArticleListComponent implements OnInit {
   selectArticle(article: apiClient.Article) {
     this.selectedArticle = article;
   }
-}
+  }
+  import { signal } from '@angular/core';
+
+  export class ArticleListComponent {
+    articles = signal<apiClient.Article[]>([]);
+    loading = signal(true);
+    selectedArticle = signal<apiClient.Article | undefined>(undefined);
+    isGridMode = signal(false);
+
+    constructor(private articleService: ArticleService) {
+      this.articleService.getAllArticles().subscribe({
+        next: (data) => {
+          if (Array.isArray(data)) {
+            this.articles.set([...data]);
+          } else {
+            this.articles.set([]);
+          }
+          this.loading.set(false);
+        },
+        error: () => {
+          this.articles.set([]);
+          this.loading.set(false);
+        }
+      });
+    }
+
+    selectArticle(article: apiClient.Article) {
+      this.selectedArticle.set(article);
+    }
+  }
