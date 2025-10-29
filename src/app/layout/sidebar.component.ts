@@ -15,6 +15,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
           <a mat-list-item routerLink="/" routerLinkActive="active">Accueil</a>
           <a mat-list-item routerLink="/articles" routerLinkActive="active">Articles</a>
           <a mat-list-item routerLink="/about" routerLinkActive="active">À propos</a>
+          <a mat-list-item routerLink="/contact" routerLinkActive="active">Contact</a>
         </mat-nav-list>
       </mat-sidenav>
       <mat-sidenav-content>

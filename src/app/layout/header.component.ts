@@ -15,7 +15,8 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
       <nav>
         <button mat-button routerLink="/" routerLinkActive="active">Accueil</button>
         <button mat-button routerLink="/articles" routerLinkActive="active">Articles</button>
-        <button mat-button routerLink="/about" routerLinkActive="active">À propos</button>
+  <button mat-button routerLink="/about" routerLinkActive="active">À propos</button>
+  <button mat-button routerLink="/contact" routerLinkActive="active">Contact</button>
       </nav>
     </mat-toolbar>
   `,
