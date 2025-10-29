@@ -1,9 +1,10 @@
 <app-header />
-<div style="display: flex; min-height: calc(100vh - 112px); flex-direction: row;">
-	<app-sidebar>
-		<div style="flex: 1; padding: 2rem;">
+<div style="display: flex; min-height: calc(100vh - 112px); flex-direction: row; width: 100vw;">
+	<app-sidebar></app-sidebar>
+	<div style="flex: 1 1 0; width: 100%;">
+		<div style="padding: 2rem; width: 100%; box-sizing: border-box;">
 			<router-outlet />
 		</div>
-	</app-sidebar>
+	</div>
 </div>
 <app-footer />
