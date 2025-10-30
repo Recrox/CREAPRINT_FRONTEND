@@ -9,6 +9,9 @@ import { MatDividerModule } from '@angular/material/divider';
 import * as apiClient from '../../api-client';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ArticleService } from '../../services/article.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../shared/confirm-dialog.component';
 
 @Component({
   selector: 'app-article-detail',
@@ -84,13 +87,16 @@ export class ArticleDetailComponent {
   private articleSignal = signal<apiClient.apiClient.Article | undefined>(undefined);
   article: Signal<apiClient.apiClient.Article | undefined> = this.articleSignal;
   loading = signal(false);
+  private loadedFromRoute = false;
 
   @Input('article')
   set articleInput(a: apiClient.apiClient.Article | undefined) {
     this.articleSignal.set(a);
+    // if an article was provided via @Input, this component is embedded and not loaded from the route
+    this.loadedFromRoute = false;
   }
 
-  constructor(private route: ActivatedRoute, private articleService: ArticleService, private router: Router) {}
+  constructor(private route: ActivatedRoute, private articleService: ArticleService, private router: Router, private snackBar: MatSnackBar, private dialog: MatDialog) {}
 
   ngOnInit(): void {
     // Subscribe to route changes and fetch when an id is present if no input was provided
@@ -101,6 +107,7 @@ export class ArticleDetailComponent {
       const current = this.articleSignal();
       if (!isNaN(id) && (!current || current.id !== id)) {
         this.loading.set(true);
+        this.loadedFromRoute = true;
         this.articleService.getArticle(id).subscribe({
           next: a => { this.articleSignal.set(a); this.loading.set(false); },
           error: () => { this.articleSignal.set(undefined); this.loading.set(false); }
@@ -120,6 +127,25 @@ export class ArticleDetailComponent {
   deleteCurrent() {
     const a = this.articleSignal();
     if (!a || !a.id) return;
+    // If this component was loaded via the route (standalone), perform the delete here
+    if (this.loadedFromRoute) {
+      const ref = this.dialog.open(ConfirmDialogComponent, { data: { id: a.id } });
+      ref.afterClosed().subscribe((confirmed: boolean) => {
+        if (!confirmed) return;
+          this.articleService.deleteArticle(a.id!).subscribe({
+          next: () => {
+            this.snackBar.open('Article supprimé', undefined, { duration: 3000 });
+            this.router.navigate(['/articles']);
+          },
+          error: () => {
+            this.snackBar.open('Impossible de supprimer l\'article', undefined, { duration: 3000 });
+          }
+        });
+      });
+      return;
+    }
+
+    // Otherwise, notify parent to handle deletion
     this.deleteArticle.emit(a.id);
   }
 }

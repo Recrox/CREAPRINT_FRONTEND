@@ -14,6 +14,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../shared/confirm-dialog.component';
 import { RouterLink } from '@angular/router';
 
 import { signal } from '@angular/core';
@@ -24,7 +26,7 @@ import * as apiClient from '../../api-client';
 @Component({
   selector: 'app-article-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatCardModule, MatListModule, MatTableModule, ArticleDetailComponent, ArticleGridComponent, ArticleTableComponent, ArticleListToolbarComponent, MatSlideToggleModule, MatIconModule, MatButtonModule, MatPaginatorModule, MatProgressSpinnerModule, MatSnackBarModule, RouterLink],
+  imports: [CommonModule, FormsModule, MatCardModule, MatListModule, MatTableModule, ArticleDetailComponent, ArticleGridComponent, ArticleTableComponent, ArticleListToolbarComponent, MatSlideToggleModule, MatIconModule, MatButtonModule, MatPaginatorModule, MatProgressSpinnerModule, MatSnackBarModule, MatDialogModule, RouterLink],
   template: `
   <mat-card style="width:100%;max-width:none;margin-bottom:3rem;padding:2rem;">
     <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
@@ -38,11 +40,11 @@ import * as apiClient from '../../api-client';
       <div *ngIf="!loading() && pagedArticles().length && !selectedArticle()">
         <ng-container *ngIf="!isGridMode(); else gridView">
             <div style="width:100%;overflow-x:auto;">
-            <app-article-table [articles]="pagedArticles()" (deleteArticle)="onDelete($event)"></app-article-table>
+            <app-article-table [articles]="pagedArticles()" (deleteArticle)="confirmAndDelete($event)"></app-article-table>
           </div>
         </ng-container>
         <ng-template #gridView>
-          <app-article-grid [articles]="pagedArticles()" (deleteArticle)="onDelete($event)"></app-article-grid>
+          <app-article-grid [articles]="pagedArticles()" (deleteArticle)="confirmAndDelete($event)"></app-article-grid>
         </ng-template>
         <mat-paginator
           [length]="total()"
@@ -79,7 +81,17 @@ export class ArticleListComponent implements OnInit {
   pagedArticles = signal<apiClient.apiClient.Article[]>([]);
   total = signal(0);
 
-  constructor(private articleService: ArticleService, private cdr: ChangeDetectorRef, private router: Router, private snackBar: MatSnackBar) {}
+  constructor(private articleService: ArticleService, private cdr: ChangeDetectorRef, private router: Router, private snackBar: MatSnackBar, private dialog: MatDialog) {}
+
+  confirmAndDelete(id: number) {
+    if (!id) return;
+    const ref = this.dialog.open(ConfirmDialogComponent, { data: { id } });
+    ref.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        this.onDelete(id);
+      }
+    });
+  }
 
   onDelete(id: number) {
     if (!id) return;
