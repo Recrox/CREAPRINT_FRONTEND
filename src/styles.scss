@@ -119,3 +119,91 @@ button.mat-raised-button:hover, button.mat-button:hover {
     width: 100px;
   }
 }
+
+/* Dark theme overrides — applied when ThemeService adds `body.dark-theme` */
+body.dark-theme {
+  background: #071225;
+  color: #e6eef6;
+  color-scheme: dark;
+}
+
+body.dark-theme mat-toolbar.header-toolbar {
+  background: #0b3147 !important;
+  color: #eaf6ff !important;
+}
+
+body.dark-theme mat-sidenav.sidebar, body.dark-theme .sidebar {
+  background: linear-gradient(180deg,#071827 0%, #05202a 100%);
+  color: #e6eef6;
+  border-right: 1px solid rgba(255,255,255,0.04);
+}
+
+body.dark-theme .sidebar .active {
+  color: #7be3d6;
+}
+
+body.dark-theme mat-card {
+  background: #081826;
+  color: #e6eef6;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+}
+
+body.dark-theme button.mat-raised-button, body.dark-theme button.mat-button {
+  background: #0b6b8a;
+  color: #eaf6ff;
+}
+
+body.dark-theme a[mat-list-item] {
+  color: #d8eef3;
+}
+
+body.dark-theme a[mat-list-item].active {
+  background: rgba(123,227,214,0.06);
+  color: #7be3d6;
+}
+
+/* Footer dark theme */
+body.dark-theme .footer-root {
+  background: linear-gradient(180deg, #031419, #051824);
+  color: #dff7f5;
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+body.dark-theme .footer-root .brand .tag,
+body.dark-theme .footer-root .footer-bottom {
+  color: rgba(223,247,245,0.8);
+}
+body.dark-theme .footer-root .links a {
+  color: #cfeef0;
+  opacity: 0.95;
+}
+body.dark-theme .footer-root mat-form-field .mat-form-field-wrapper {
+  color: #e6eef6;
+}
+body.dark-theme .footer-root button.mat-flat-button {
+  background: #0b6b8a;
+  color: #eaf6ff;
+}
+
+/* Home page dark theme overrides */
+body.dark-theme .hero {
+  background: linear-gradient(90deg, #021821 0%, #031827 100%);
+  color: #e6eef6;
+}
+body.dark-theme .hero .lead {
+  color: rgba(230,238,246,0.85);
+}
+body.dark-theme .feature {
+  background: rgba(255,255,255,0.03);
+  box-shadow: 0 1px 6px rgba(0,0,0,0.6);
+  color: #e6eef6;
+}
+body.dark-theme .feature mat-icon {
+  color: #7be3d6;
+}
+body.dark-theme .preview mat-card {
+  background: #071426;
+  color: #e6eef6;
+}
+
+
+

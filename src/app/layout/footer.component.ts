@@ -46,7 +46,7 @@ import { MatInputModule } from '@angular/material/input';
       </div>
 
       <div class="footer-bottom">
-        <span>&copy; {{ currentYear }} CreaPrint</span>
+        <span>© {{ currentYear }} CreaPrint — Tous droits réservés.</span>
         <span class="spacer"></span>
         <span>Made with ♥</span>
       </div>
