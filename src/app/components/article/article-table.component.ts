@@ -38,7 +38,10 @@ import * as apiClient from '../../api-client';
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let article">
-          <button mat-stroked-button color="primary" (click)="addToCart(article, $event)">Ajouter au panier</button>
+          <button mat-stroked-button color="primary" (click)="addToCart(article, $event)">
+            <mat-icon>shopping_cart</mat-icon>
+            &nbsp;Ajouter
+          </button>
           &nbsp;
           <button mat-icon-button color="warn" aria-label="Supprimer" (click)="delete(article, $event)">
             <mat-icon>delete</mat-icon>
