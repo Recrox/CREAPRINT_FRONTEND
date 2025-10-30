@@ -10,6 +10,7 @@ import { AuthStateService } from '../../services/auth-state.service';
 import * as apiClient from '../../api-client';
 import { sharedAxiosInstance, TokenService } from '../../services/http.service';
 import { environment } from '../../../environments/environment';
+import { signal as ngSignal } from '@angular/core';
 
 @Component({
   selector: 'app-profile',
@@ -46,7 +47,16 @@ import { environment } from '../../../environments/environment';
                 </div>
                 <div class="right">
                   <div class="field"><span class="label">Nom d'utilisateur</span><span class="value">{{ user()?.username || '—' }}</span></div>
-                  <div class="field"><span class="label">Mot de passe (hash)</span><span class="value long-text">{{ user()?.passwordHash || '—' }}</span></div>
+                  <div class="field"><span class="label">Droits</span><span class="value">{{ rightsLabel() }} <span class="muted">({{ user()?.rights ?? '—' }})</span></span></div>
+                  <div class="field password-field">
+                    <span class="label">Mot de passe (hash)</span>
+                    <div class="pw-controls" [class.expanded]="showPassword()">
+                      <span class="value long-text" [class.truncate]="!showPassword()" [class.expanded]="showPassword()">{{ maskedHash() }}</span>
+                      <button mat-icon-button class="pw-toggle" (click)="togglePassword()" aria-label="Afficher le mot de passe">
+                        <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+                      </button>
+                    </div>
+                  </div>
                   <div class="field"><span class="label">Créé le</span><span class="value">{{ user()?.createdOn ? (user()?.createdOn | date:'medium') : '—' }}</span></div>
                   <div class="field"><span class="label">Dernière modification</span><span class="value">{{ user()?.updatedOn ? (user()?.updatedOn | date:'medium') : '—' }}</span></div>
                 </div>
@@ -81,8 +91,36 @@ import { environment } from '../../../environments/environment';
     .muted { color:rgba(0,0,0,0.6); margin-top:8px; }
     .field { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px dashed rgba(0,0,0,0.04); }
     .label { color:rgba(0,0,0,0.6); font-size:13px; }
-    .value { font-weight:600; max-width:100%; word-break:break-word; }
-    .long-text { white-space:normal; word-break:break-all; }
+  .value { font-weight:600; max-width:100%; }
+  .long-text { white-space:normal; word-break:break-all; }
+  /* password value: single-line, truncate with ellipsis when hidden */
+  .password-field .value.truncate { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  /* when expanded (visible), allow wrapping and full display */
+  .password-field .value.expanded { white-space:normal; overflow:visible; text-overflow:clip; word-break:break-all; }
+  .password-field { display:flex; align-items:center; position:relative; }
+  /* keep password controls relatively compact on desktop (fixed width), full-width on small screens */
+  .pw-controls { margin-left:auto; display:flex; align-items:center; gap:8px; justify-content:flex-end; max-width:320px; }
+  .pw-toggle { height:28px; width:28px; vertical-align:middle; }
+  /* make the value compact on desktop */
+  .password-field .value { display:inline-block; max-width:calc(100% - 64px); text-align:right; }
+
+  @media (max-width: 720px) {
+    .pw-controls { max-width:100%; }
+    .password-field .value { max-width:calc(100% - 48px); text-align:right; }
+  }
+
+    /* Dark theme overrides when body has .dark-theme */
+    :host-context(.dark-theme) .hero {
+      background: linear-gradient(90deg, #071226, #0b1320);
+      box-shadow: none;
+    }
+    :host-context(.dark-theme) .avatar { background: linear-gradient(135deg,#0f172a,#082032); }
+    :host-context(.dark-theme) .hero-name, :host-context(.dark-theme) .hero-sub, :host-context(.dark-theme) .label, :host-context(.dark-theme) .muted { color: #e6eef6; }
+    :host-context(.dark-theme) .details-card { background: #071226; color: #e6eef6; }
+    :host-context(.dark-theme) .details-grid .left { border-right:1px solid rgba(255,255,255,0.03); }
+  :host-context(.dark-theme) .field { border-bottom:1px dashed rgba(255,255,255,0.03); }
+    :host-context(.dark-theme) .value { color: #ffffff; }
+    :host-context(.dark-theme) .long-text { color: #dbeafe; }
 
     @media (max-width: 720px) {
       .details-grid { grid-template-columns: 1fr; }
@@ -97,13 +135,27 @@ export class ProfileComponent implements OnInit {
   private userSignal = signal<apiClient.apiClient.User | undefined>(undefined);
   user = this.userSignal;
   loading = signal(false);
+  // show/hide password hash
+  showPassword = ngSignal(false);
 
   constructor(public auth: AuthStateService, private router: Router) {}
 
   ngOnInit(): void {
-    console.log(this.user());
-    
     this.fetchUser();
+  }
+
+  togglePassword() {
+    this.showPassword.set(!this.showPassword());
+  }
+
+  maskedHash(): string {
+    const h = this.user()?.passwordHash || '';
+    if (!h) return '—';
+    if (this.showPassword()) return h;
+    // show bullets like a traditional password field; cap to avoid very long lines
+    const cap = 40;
+    const count = Math.min(h.length, cap);
+    return '•'.repeat(count);
   }
 
   async fetchUser() {
