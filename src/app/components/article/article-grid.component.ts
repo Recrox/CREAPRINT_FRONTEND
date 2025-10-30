@@ -2,12 +2,15 @@ import { Component, Input, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { RouterLink } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import * as apiClient from '../../api-client';
+import { CartService } from '../../services/cart.service';
 
 @Component({
   selector: 'app-article-grid',
   standalone: true,
-  imports: [CommonModule, MatCardModule, RouterLink],
+  imports: [CommonModule, MatCardModule, RouterLink, MatButtonModule, MatIconModule],
   template: `
     <div class="article-grid">
       <mat-card *ngFor="let article of articlesList" class="article-card">
@@ -19,6 +22,12 @@ import * as apiClient from '../../api-client';
         <mat-card-content>
           <p>{{ article.content }}</p>
           <div style="margin-top:0.5rem;font-weight:bold;">Prix : {{ article.price | number:'1.2-2' }} €</div>
+          <div style="margin-top:0.75rem;display:flex;justify-content:flex-end;">
+            <button mat-stroked-button color="primary" (click)="addToCart(article)">
+              <mat-icon>shopping_cart</mat-icon>
+              &nbsp;Ajouter
+            </button>
+          </div>
         </mat-card-content>
       </mat-card>
     </div>
@@ -40,6 +49,13 @@ import * as apiClient from '../../api-client';
 })
 export class ArticleGridComponent {
   @Input() articles: apiClient.apiClient.Article[] | Signal<apiClient.apiClient.Article[]> = [];
+
+  constructor(private cart: CartService) {}
+
+  addToCart(article: apiClient.apiClient.Article) {
+    if (!article?.id) return;
+    this.cart.addItem(article.id, 1).subscribe({ next: () => {}, error: () => {} });
+  }
 
   get articlesList(): apiClient.apiClient.Article[] {
     if (typeof this.articles === 'function') {
