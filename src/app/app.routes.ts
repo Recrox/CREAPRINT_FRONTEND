@@ -40,4 +40,9 @@ export const routes: Routes = [
 		path: 'cart',
 		loadComponent: () => import('./components/cart/cart.component').then(m => m.CartComponent)
 	}
+	,
+	{
+		path: '**',
+		loadComponent: () => import('./components/not-found.component').then(m => m.NotFoundComponent)
+	}
 ];

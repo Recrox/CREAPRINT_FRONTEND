@@ -35,14 +35,14 @@ import { CartService } from '../../services/cart.service';
   styles: [`
     .article-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 0.5rem; /* reduced spacing between cards */
       width: 100%;
-      margin-top: 1rem;
+      margin-top: 0.5rem;
     }
     .article-card {
       width: 100%;
-      max-width: 300px;
+      max-width: 290px; /* slightly narrower so rows fit tighter */
       margin: auto;
     }
   `]

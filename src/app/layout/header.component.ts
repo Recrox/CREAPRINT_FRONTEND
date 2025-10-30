@@ -13,7 +13,14 @@ import { ThemeService } from '../services/theme.service';
   imports: [CommonModule, MatToolbarModule, MatButtonModule, MatIconModule, RouterLink, RouterLinkActive, UserMenuComponent],
   template: `
     <mat-toolbar color="primary" class="header-toolbar">
-      <span class="logo">CreaPrint</span>
+      <span class="logo">
+        <svg class="logo-ico" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="24" height="24" rx="4" fill="#fff" fill-opacity="0.06"></rect>
+          <path d="M6 8 L11 13 L6 18 L2 14 L6 8 Z" fill="#fff" opacity="0.95" />
+          <circle cx="17" cy="12" r="3" fill="#fff" opacity="0.95" />
+        </svg>
+        CreaPrint
+      </span>
       <span class="spacer"></span>
       <nav>
         <button mat-button routerLink="/" routerLinkActive="active">Accueil</button>
@@ -37,11 +44,13 @@ import { ThemeService } from '../services/theme.service';
     }
     .logo {
       font-weight: bold;
-      font-size: 1.3rem;
+      font-size: 1.15rem;
       letter-spacing: 1px;
       user-select: none;
       color: var(--header-logo-color, #fff);
+      display:inline-flex; align-items:center; gap:0.5rem;
     }
+    .logo-ico { filter: drop-shadow(0 1px 0 rgba(0,0,0,0.15)); }
     .spacer {
       flex: 1 1 auto;
     }
