@@ -15,6 +15,30 @@ export class AuthService {
   }
 
   /**
+   * Quick session check: attempt to call an endpoint that requires auth. If it succeeds,
+   * mark the UI as logged in. This helps keep the UI logged in across page reloads when
+   * the server uses cookie-based sessions or when a token is present.
+   */
+  async checkAuth(): Promise<boolean> {
+    // If a token exists in storage, mark logged in immediately
+    if (TokenService.getToken()) {
+      this.authState.setLoggedIn(true);
+      return true;
+    }
+
+    try {
+      // Try a common endpoint - /api/User/me. If backend doesn't expose it, this will fail silently.
+      await sharedAxiosInstance.get(environment.apiBaseUrl + '/api/User/me');
+      this.authState.setLoggedIn(true);
+      return true;
+    } catch (e) {
+      // not authenticated
+      this.authState.setLoggedIn(false);
+      return false;
+    }
+  }
+
+  /**
    * Attempt to authenticate using the generated ApiClient. On success, set logged-in state.
    */
   login(username: string, password: string): Observable<void> {
@@ -48,7 +72,8 @@ export class AuthService {
   }
 
   logout(): void {
-    // For now just clear local state. In a real app you'd also revoke tokens / call an API.
+    // Clear token and local state.
+    try { TokenService.setToken(null); } catch {}
     this.authState.setLoggedIn(false);
   }
 }

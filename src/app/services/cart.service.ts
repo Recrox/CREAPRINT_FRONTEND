@@ -12,9 +12,9 @@ export class CartService {
     this.client = new apiClient.apiClient.ApiClient(environment.apiBaseUrl, sharedAxiosInstance);
   }
 
-  /** Get current user's basket. Return type is any because generator produced void in some places. */
+  /** Get current user's basket by calling the Basket endpoint directly and returning response.data */
   getBasket(): Observable<any> {
-    return from(this.client.me() as Promise<any>);
+    return from(sharedAxiosInstance.get(environment.apiBaseUrl + '/api/Basket/me').then(r => r.data));
   }
 
   addItem(articleId: number, quantity = 1): Observable<void> {

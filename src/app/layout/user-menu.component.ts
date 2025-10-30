@@ -23,7 +23,7 @@ import { AuthStateService } from '../services/auth-state.service';
             <mat-icon>receipt_long</mat-icon>
             <span>Commandes passées</span>
           </button>
-          <button mat-menu-item (click)="goTo('/cart')">
+          <button mat-menu-item (click)="goTo('/basket')">
             <mat-icon>shopping_cart</mat-icon>
             <span>Panier</span>
           </button>

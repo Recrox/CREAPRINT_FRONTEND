@@ -19,7 +19,8 @@ export class App implements OnInit {
   constructor(private router: Router, private auth: AuthService, private authState: AuthStateService) {}
 
   ngOnInit(): void {
-    this.connectAdminInDebug();
+    // restore auth state from token or server session, then enable debug auto-login
+    this.auth.checkAuth().then(() => this.connectAdminInDebug());
   }
 
   // Auto-login when navigating to base '/' for debug convenience (only in non-production)

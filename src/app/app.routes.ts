@@ -41,8 +41,8 @@ export const routes: Routes = [
 	}
 	,
 	{
-		path: 'cart',
-		loadComponent: () => import('./components/cart/cart.component').then(m => m.CartComponent)
+		path: 'basket',
+		loadComponent: () => import('./components/basket/basket.component').then(m => m.BasketComponent)
 	}
 	,
 	{
