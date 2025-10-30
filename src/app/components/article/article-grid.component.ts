@@ -1,4 +1,4 @@
-import { Component, Input, Signal } from '@angular/core';
+import { Component, Input, Signal, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { Router } from '@angular/router';
@@ -22,11 +22,18 @@ import { CartService } from '../../services/cart.service';
         <mat-card-content>
           <p>{{ article.content }}</p>
           <div style="margin-top:0.5rem;font-weight:bold;">Prix : {{ article.price | number:'1.2-2' }} €</div>
-          <div style="margin-top:0.75rem;display:flex;justify-content:flex-end;">
-            <button mat-stroked-button color="primary" (click)="addToCart(article, $event)">
-              <mat-icon>shopping_cart</mat-icon>
-              &nbsp;Ajouter
-            </button>
+          <div style="margin-top:0.75rem;display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <button mat-stroked-button color="primary" (click)="addToCart(article, $event)">
+                <mat-icon>shopping_cart</mat-icon>
+                &nbsp;Ajouter
+              </button>
+            </div>
+            <div>
+              <button mat-icon-button color="warn" aria-label="Supprimer" (click)="delete(article, $event)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
           </div>
         </mat-card-content>
       </mat-card>
@@ -49,6 +56,7 @@ import { CartService } from '../../services/cart.service';
 })
 export class ArticleGridComponent {
   @Input() articles: apiClient.apiClient.Article[] | Signal<apiClient.apiClient.Article[]> = [];
+  @Output() deleteArticle = new EventEmitter<number>();
 
   constructor(private cart: CartService, private router: Router) {}
 
@@ -56,6 +64,12 @@ export class ArticleGridComponent {
     if (event) event.stopPropagation();
     if (!article?.id) return;
     this.cart.addItem(article.id, 1).subscribe({ next: () => {}, error: () => {} });
+  }
+
+  delete(article: apiClient.apiClient.Article, event?: Event) {
+    if (event) event.stopPropagation();
+    if (!article?.id) return;
+    this.deleteArticle.emit(article.id);
   }
 
   goTo(article: apiClient.apiClient.Article) {

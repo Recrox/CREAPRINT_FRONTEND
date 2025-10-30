@@ -13,6 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterLink } from '@angular/router';
 
 import { signal } from '@angular/core';
@@ -23,7 +24,7 @@ import * as apiClient from '../../api-client';
 @Component({
   selector: 'app-article-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatCardModule, MatListModule, MatTableModule, ArticleDetailComponent, ArticleGridComponent, ArticleTableComponent, ArticleListToolbarComponent, MatSlideToggleModule, MatIconModule, MatButtonModule, MatPaginatorModule, MatProgressSpinnerModule, RouterLink],
+  imports: [CommonModule, FormsModule, MatCardModule, MatListModule, MatTableModule, ArticleDetailComponent, ArticleGridComponent, ArticleTableComponent, ArticleListToolbarComponent, MatSlideToggleModule, MatIconModule, MatButtonModule, MatPaginatorModule, MatProgressSpinnerModule, MatSnackBarModule, RouterLink],
   template: `
   <mat-card style="width:100%;max-width:none;margin-bottom:3rem;padding:2rem;">
     <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
@@ -36,12 +37,12 @@ import * as apiClient from '../../api-client';
 
       <div *ngIf="!loading() && pagedArticles().length && !selectedArticle()">
         <ng-container *ngIf="!isGridMode(); else gridView">
-          <div style="width:100%;overflow-x:auto;">
-            <app-article-table [articles]="pagedArticles()"></app-article-table>
+            <div style="width:100%;overflow-x:auto;">
+            <app-article-table [articles]="pagedArticles()" (deleteArticle)="onDelete($event)"></app-article-table>
           </div>
         </ng-container>
         <ng-template #gridView>
-          <app-article-grid [articles]="pagedArticles()"></app-article-grid>
+          <app-article-grid [articles]="pagedArticles()" (deleteArticle)="onDelete($event)"></app-article-grid>
         </ng-template>
         <mat-paginator
           [length]="total()"
@@ -62,7 +63,7 @@ import * as apiClient from '../../api-client';
       </div>
       <div *ngIf="!loading() && articles().length === 0">Aucun article trouvé.</div>
 
-      <app-article-detail *ngIf="selectedArticle()" [article]="selectedArticle()" (back)="selectedArticle.set(undefined)"></app-article-detail>
+  <app-article-detail *ngIf="selectedArticle()" [article]="selectedArticle()" (back)="selectedArticle.set(undefined)" (deleteArticle)="onDelete($event)"></app-article-detail>
     </mat-card-content>
   </mat-card>
   `
@@ -78,7 +79,27 @@ export class ArticleListComponent implements OnInit {
   pagedArticles = signal<apiClient.apiClient.Article[]>([]);
   total = signal(0);
 
-  constructor(private articleService: ArticleService, private cdr: ChangeDetectorRef, private router: Router) {}
+  constructor(private articleService: ArticleService, private cdr: ChangeDetectorRef, private router: Router, private snackBar: MatSnackBar) {}
+
+  onDelete(id: number) {
+    if (!id) return;
+    this.articleService.deleteArticle(id).subscribe({
+      next: () => {
+        this.snackBar.open('Article supprimé', undefined, { duration: 3000 });
+        // if currently viewing this article in detail, clear it and navigate to list
+        const sel = this.selectedArticle();
+        if (sel && sel.id === id) {
+          this.selectedArticle.set(undefined);
+          this.router.navigate(['/articles']);
+        }
+        // refresh current page
+        this.fetchPage();
+      },
+      error: () => {
+        this.snackBar.open('Impossible de supprimer l\'article', undefined, { duration: 3000 });
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.fetchPage();

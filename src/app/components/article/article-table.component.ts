@@ -1,16 +1,17 @@
-import { Component, Input, Signal } from '@angular/core';
+import { Component, Input, Signal, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { CartService } from '../../services/cart.service';
 import * as apiClient from '../../api-client';
 
 @Component({
   selector: 'app-article-table',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatSortModule, MatButtonModule],
+  imports: [CommonModule, MatTableModule, MatSortModule, MatButtonModule, MatIconModule],
   template: `
   <table mat-table [dataSource]="articlesList" matSort class="mat-elevation-z1" style="width:100%;min-width:600px;">
       <ng-container matColumnDef="id">
@@ -38,6 +39,10 @@ import * as apiClient from '../../api-client';
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let article">
           <button mat-stroked-button color="primary" (click)="addToCart(article, $event)">Ajouter au panier</button>
+          &nbsp;
+          <button mat-icon-button color="warn" aria-label="Supprimer" (click)="delete(article, $event)">
+            <mat-icon>delete</mat-icon>
+          </button>
         </td>
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -47,6 +52,7 @@ import * as apiClient from '../../api-client';
 })
 export class ArticleTableComponent {
   @Input() articles: apiClient.apiClient.Article[] | Signal<apiClient.apiClient.Article[]> = [];
+  @Output() deleteArticle = new EventEmitter<number>();
   displayedColumns: string[] = ['id', 'title', 'content', 'category', 'price', 'actions'];
 
   constructor(private cart: CartService, private router: Router) {}
@@ -55,6 +61,12 @@ export class ArticleTableComponent {
     if (event) event.stopPropagation();
     if (!article?.id) return;
     this.cart.addItem(article.id, 1).subscribe({ next: () => {}, error: () => {} });
+  }
+
+  delete(article: apiClient.apiClient.Article, event?: Event) {
+    if (event) event.stopPropagation();
+    if (!article?.id) return;
+    this.deleteArticle.emit(article.id);
   }
 
   goTo(article: apiClient.apiClient.Article) {

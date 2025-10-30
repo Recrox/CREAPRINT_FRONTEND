@@ -27,6 +27,10 @@ export class ArticleService {
     return from(this.client.articlesPUT(id, article));
   }
 
+  deleteArticle(id: number): Observable<void> {
+    return from(this.client.articlesDELETE(id));
+  }
+
   /**
    * Server-side search by title (uses ApiClient.search)
    */

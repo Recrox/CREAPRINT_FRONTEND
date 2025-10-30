@@ -45,6 +45,10 @@ import { ArticleService } from '../../services/article.service';
               <mat-icon>edit</mat-icon>
               Éditer
             </button>
+            &nbsp;
+            <button mat-icon-button color="warn" aria-label="Supprimer" (click)="deleteCurrent()">
+              <mat-icon>delete</mat-icon>
+            </button>
           </div>
         </div>
       </mat-card>
@@ -105,10 +109,17 @@ export class ArticleDetailComponent {
     });
   }
   @Output() back = new EventEmitter<void>();
+  @Output() deleteArticle = new EventEmitter<number>();
 
   edit() {
     const a = this.articleSignal();
     if (!a || !a.id) return;
     this.router.navigate(['/articles', a.id, 'edit']);
+  }
+
+  deleteCurrent() {
+    const a = this.articleSignal();
+    if (!a || !a.id) return;
+    this.deleteArticle.emit(a.id);
   }
 }
