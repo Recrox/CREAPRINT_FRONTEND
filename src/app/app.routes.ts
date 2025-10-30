@@ -13,6 +13,10 @@ export const routes: Routes = [
 		path: 'articles',
 		loadComponent: () => import('./components/article/article-list.component').then(m => m.ArticleListComponent)
 	},
+    {
+        path: 'articles/new',
+        loadComponent: () => import('./components/article/edit-article.component').then(m => m.EditArticleComponent)
+    },
 	{
 		path: 'articles/:id',
 		loadComponent: () => import('./components/article/article-detail.component').then(m => m.ArticleDetailComponent)

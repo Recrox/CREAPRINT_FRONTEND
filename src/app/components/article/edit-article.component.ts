@@ -6,6 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ArticleService } from '../../services/article.service';
 import * as apiClient from '../../api-client';
@@ -13,7 +14,7 @@ import * as apiClient from '../../api-client';
 @Component({
   standalone: true,
   selector: 'app-edit-article',
-  imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule],
+  imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatSnackBarModule],
   template: `
     <div class="edit-root">
       <mat-card *ngIf="loading()">
@@ -22,7 +23,7 @@ import * as apiClient from '../../api-client';
 
       <mat-card *ngIf="!loading()">
         <form [formGroup]="form" (ngSubmit)="save()">
-          <h2>Éditer l'article</h2>
+          <h2>{{ isNew ? 'Créer un article' : "Éditer l'article" }}</h2>
 
           <mat-form-field appearance="fill" style="width:100%;">
             <mat-label>Titre</mat-label>
@@ -62,8 +63,9 @@ export class EditArticleComponent {
   form: FormGroup;
 
   private currentArticle?: apiClient.apiClient.Article;
+  isNew = false;
 
-  constructor(private route: ActivatedRoute, private router: Router, private fb: FormBuilder, private articleService: ArticleService) {
+  constructor(private route: ActivatedRoute, private router: Router, private fb: FormBuilder, private articleService: ArticleService, private snackBar: MatSnackBar) {
     this.form = this.fb.group({
       title: ['', Validators.required],
       content: [''],
@@ -73,6 +75,7 @@ export class EditArticleComponent {
       const idStr = pm.get('id');
       const id = idStr ? Number(idStr) : NaN;
       if (!isNaN(id)) {
+        this.isNew = false;
         this.loading.set(true);
         this.articleService.getArticle(id).subscribe({
           next: a => {
@@ -83,25 +86,54 @@ export class EditArticleComponent {
           error: () => { this.loading.set(false); }
         });
       } else {
+        // create mode
+        this.isNew = true;
+        this.currentArticle = undefined;
         this.loading.set(false);
       }
     });
   }
 
   save() {
-    if (!this.currentArticle || !this.currentArticle.id) return;
-    this.saving.set(true);
     const fv = this.form.value;
-    const updated: apiClient.apiClient.Article = new apiClient.apiClient.Article({
-      ...this.currentArticle,
-      title: fv.title ?? '',
-      content: fv.content ?? '',
-      price: Number(fv.price ?? 0)
-    });
-    this.articleService.updateArticle(this.currentArticle.id!, updated).subscribe({
-      next: () => { this.saving.set(false); this.router.navigate(['/articles', this.currentArticle!.id]); },
-      error: () => { this.saving.set(false); }
-    });
+    if (!this.isNew && this.currentArticle && this.currentArticle.id) {
+      // update
+      this.saving.set(true);
+      const updated: apiClient.apiClient.Article = new apiClient.apiClient.Article({
+        ...this.currentArticle,
+        title: fv.title ?? '',
+        content: fv.content ?? '',
+        price: Number(fv.price ?? 0)
+      });
+      this.articleService.updateArticle(this.currentArticle.id, updated).subscribe({
+        next: () => {
+          this.saving.set(false);
+          this.snackBar.open('Article mis à jour', 'OK', { duration: 2000 });
+          this.router.navigate(['/articles', this.currentArticle!.id]);
+        },
+        error: () => { this.saving.set(false); this.snackBar.open('Erreur lors de la mise à jour', 'OK', { duration: 3000 }); }
+      });
+    } else {
+      // create
+      this.saving.set(true);
+      const createdArticle = new apiClient.apiClient.Article({
+        title: fv.title ?? '',
+        content: fv.content ?? '',
+        price: Number(fv.price ?? 0)
+      });
+      this.articleService.createArticle(createdArticle).subscribe({
+        next: a => {
+          this.saving.set(false);
+          this.snackBar.open('Article créé', 'OK', { duration: 2000 });
+          if (a && (a as any).id) {
+            this.router.navigate(['/articles', (a as any).id]);
+          } else {
+            this.router.navigate(['/articles']);
+          }
+        },
+        error: () => { this.saving.set(false); this.snackBar.open('Erreur lors de la création', 'OK', { duration: 3000 }); }
+      });
+    }
   }
 
   cancel() { const id = this.currentArticle?.id; if (id) this.router.navigate(['/articles', id]); else this.router.navigate(['/articles']); }

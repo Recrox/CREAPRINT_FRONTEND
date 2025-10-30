@@ -6,13 +6,14 @@ import { MatTableModule } from '@angular/material/table';
 import { ArticleDetailComponent } from './article-detail.component';
 import { ArticleGridComponent } from './article-grid.component';
 import { ArticleTableComponent } from './article-table.component';
-import { ArticleSearchComponent } from './article-search.component';
 import { ArticleListToolbarComponent } from './article-list-toolbar.component';
 import { FormsModule } from '@angular/forms';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { RouterLink } from '@angular/router';
 
 import { signal } from '@angular/core';
 import { ArticleService } from '../../services/article.service';
@@ -22,10 +23,14 @@ import * as apiClient from '../../api-client';
 @Component({
   selector: 'app-article-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatCardModule, MatListModule, MatTableModule, ArticleDetailComponent, ArticleGridComponent, ArticleTableComponent, ArticleListToolbarComponent, MatSlideToggleModule, MatIconModule, MatPaginatorModule, MatProgressSpinnerModule],
+  imports: [CommonModule, FormsModule, MatCardModule, MatListModule, MatTableModule, ArticleDetailComponent, ArticleGridComponent, ArticleTableComponent, ArticleListToolbarComponent, MatSlideToggleModule, MatIconModule, MatButtonModule, MatPaginatorModule, MatProgressSpinnerModule, RouterLink],
   template: `
   <mat-card style="width:100%;max-width:none;margin-bottom:3rem;padding:2rem;">
-    <mat-card-title style="text-align:center;margin-bottom:1rem;font-size:1.5rem;font-weight:600;letter-spacing:0.4px;">Liste des articles</mat-card-title>
+    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
+      <mat-card-title style="font-size:1.5rem;font-weight:600;letter-spacing:0.4px;">Liste des articles</mat-card-title>
+      <span style="flex:1 1 auto"></span>
+      <button mat-flat-button color="primary" routerLink="/articles/new"><mat-icon>add</mat-icon>&nbsp;Créer un article</button>
+    </div>
     <mat-card-content>
       <app-article-list-toolbar (search)="onSearch($event)" [isGridMode]="isGridMode"></app-article-list-toolbar>
 
@@ -66,7 +71,7 @@ export class ArticleListComponent implements OnInit {
   articles = signal<apiClient.apiClient.Article[]>([]);
   loading = signal(true);
   selectedArticle = signal<apiClient.apiClient.Article | undefined>(undefined);
-  isGridMode = signal(false);
+  isGridMode = signal(true);
 
   pageSize = signal(10);
   pageIndex = signal(0);
