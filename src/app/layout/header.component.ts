@@ -2,13 +2,15 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { UserMenuComponent } from './user-menu.component';
+import { ThemeService } from '../services/theme.service';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, MatToolbarModule, MatButtonModule, RouterLink, RouterLinkActive, UserMenuComponent],
+  imports: [CommonModule, MatToolbarModule, MatButtonModule, MatIconModule, RouterLink, RouterLinkActive, UserMenuComponent],
   template: `
     <mat-toolbar color="primary" class="header-toolbar">
       <span class="logo">CreaPrint</span>
@@ -16,9 +18,12 @@ import { UserMenuComponent } from './user-menu.component';
       <nav>
         <button mat-button routerLink="/" routerLinkActive="active">Accueil</button>
         <button mat-button routerLink="/articles" routerLinkActive="active">Articles</button>
-  <button mat-button routerLink="/about" routerLinkActive="active">À propos</button>
-  <button mat-button routerLink="/contact" routerLinkActive="active">Contact</button>
+        <button mat-button routerLink="/about" routerLinkActive="active">À propos</button>
+        <button mat-button routerLink="/contact" routerLinkActive="active">Contact</button>
       </nav>
+      <button mat-icon-button aria-label="Toggle theme" (click)="theme.toggle()">
+        <mat-icon>brightness_6</mat-icon>
+      </button>
       <app-user-menu></app-user-menu>
     </mat-toolbar>
   `,
@@ -66,4 +71,6 @@ import { UserMenuComponent } from './user-menu.component';
     }
   `]
 })
-export class HeaderComponent {}
+export class HeaderComponent {
+  constructor(public theme: ThemeService) {}
+}

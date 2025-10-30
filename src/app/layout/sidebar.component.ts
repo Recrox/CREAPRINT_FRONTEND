@@ -62,10 +62,10 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
     }
 
     /* Alternate dark theme (commented). To enable, replace .sidebar background and link colors above.
-    .sidebar { background: linear-gradient(180deg,#0f172a 0%, #082032 100%); }
-    a[mat-list-item] { color: #e6eef6; }
-    a[mat-list-item]:hover { background: rgba(255,255,255,0.04); color: #fff; }
-    a[mat-list-item].active { background: linear-gradient(90deg, rgba(16,185,129,0.06), rgba(59,130,246,0.03)); color: #a5f3fc; }
+  body.dark-theme .sidebar { background: linear-gradient(180deg,#0f172a 0%, #082032 100%); }
+  body.dark-theme a[mat-list-item] { color: #e6eef6; }
+  body.dark-theme a[mat-list-item]:hover { background: rgba(255,255,255,0.04); color: #fff; }
+  body.dark-theme a[mat-list-item].active { background: linear-gradient(90deg, rgba(16,185,129,0.06), rgba(59,130,246,0.03)); color: #a5f3fc; }
     */
     mat-sidenav-content, .mat-sidenav-content {
       min-height: 100%;
