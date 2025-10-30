@@ -16,45 +16,41 @@ import { environment } from '../../../environments/environment';
   standalone: true,
   imports: [CommonModule, MatCardModule, MatButtonModule, MatProgressSpinnerModule, MatListModule, MatIconModule],
   template: `
-    <div style="display:flex;justify-content:center;padding:2rem;">
-      <mat-card style="width:100%;max-width:820px;padding:1rem;">
-        <mat-card-title>Profil utilisateur</mat-card-title>
+    <div class="profile-page">
+      <div class="hero">
+        <div class="avatar">
+          <mat-icon>person</mat-icon>
+        </div>
+        <div class="hero-meta">
+          <h2 class="hero-name">{{ user()?.username || 'Utilisateur' }}</h2>
+          <p class="hero-sub">ID: {{ user()?.id ?? '—' }} • Rights: {{ rightsLabel() }}</p>
+        </div>
+        <div class="hero-actions">
+          <button mat-stroked-button color="primary" (click)="go('/basket')">Panier</button>
+          <button mat-flat-button color="warn" (click)="logout()">Déconnexion</button>
+        </div>
+      </div>
+
+      <mat-card class="details-card">
         <mat-card-content>
           <div *ngIf="auth.isLoggedInSignal()() ; else notLogged">
-            <div *ngIf="loading()" style="display:flex;justify-content:center;padding:1rem;">
-              <mat-progress-spinner diameter="40" mode="indeterminate"></mat-progress-spinner>
+            <div *ngIf="loading()" class="spinner-wrap">
+              <mat-progress-spinner diameter="32" mode="indeterminate"></mat-progress-spinner>
             </div>
 
             <div *ngIf="!loading()">
-              <ng-container *ngIf="user(); else noUser">
-                  <p>Informations utilisateur :</p>
-                  <mat-list>
-                    <mat-list-item>
-                      <mat-icon matListIcon>person</mat-icon>
-                      <h4 matLine>Nom d'utilisateur</h4>
-                      <p matLine>{{ user()?.username || '—' }}</p>
-                    </mat-list-item>
-                    <mat-list-item>
-                      <mat-icon matListIcon>key</mat-icon>
-                      <h4 matLine>Mot de passe (hash)</h4>
-                      <p matLine style="word-break:break-word">{{ user()?.passwordHash || '—' }}</p>
-                    </mat-list-item>
-                    <mat-list-item>
-                      <mat-icon matListIcon>security</mat-icon>
-                      <h4 matLine>Rights</h4>
-                      <p matLine>{{ rightsLabel() }}</p>
-                    </mat-list-item>
-                    <mat-list-item>
-                      <mat-icon matListIcon>update</mat-icon>
-                      <h4 matLine>Dernière modification</h4>
-                      <p matLine>{{ user()?.updatedOn ? (user()?.updatedOn | date:'medium') : '—' }}</p>
-                    </mat-list-item>
-                  </mat-list>
-                <div style="margin-top:1rem;display:flex;gap:0.5rem;">
-                  <button mat-flat-button color="primary" (click)="go('/basket')">Voir le panier</button>
-                  <button mat-stroked-button color="warn" (click)="logout()">Se déconnecter</button>
+              <div *ngIf="user(); else noUser" class="details-grid">
+                <div class="left">
+                  <h3>Compte</h3>
+                  <p class="muted">Informations personnelles et métadonnées du compte</p>
                 </div>
-              </ng-container>
+                <div class="right">
+                  <div class="field"><span class="label">Nom d'utilisateur</span><span class="value">{{ user()?.username || '—' }}</span></div>
+                  <div class="field"><span class="label">Mot de passe (hash)</span><span class="value long-text">{{ user()?.passwordHash || '—' }}</span></div>
+                  <div class="field"><span class="label">Créé le</span><span class="value">{{ user()?.createdOn ? (user()?.createdOn | date:'medium') : '—' }}</span></div>
+                  <div class="field"><span class="label">Dernière modification</span><span class="value">{{ user()?.updatedOn ? (user()?.updatedOn | date:'medium') : '—' }}</span></div>
+                </div>
+              </div>
               <ng-template #noUser>
                 <p>Impossible de récupérer les informations utilisateur.</p>
               </ng-template>
@@ -67,7 +63,35 @@ import { environment } from '../../../environments/environment';
         </mat-card-content>
       </mat-card>
     </div>
-  `
+  `,
+  styles: [
+    `
+    :host { display:block; }
+    .profile-page { max-width:980px; margin:16px auto; padding:16px; box-sizing:border-box; }
+    .hero { display:flex; align-items:center; gap:16px; background:linear-gradient(90deg, #f5f7fb, #ffffff); padding:16px; border-radius:8px; }
+    .avatar { width:64px; height:64px; border-radius:50%; background:linear-gradient(135deg,#3f51b5,#2196f3); display:flex; align-items:center; justify-content:center; color:#fff; font-size:28px; }
+    .hero-name { margin:0; font-size:20px; }
+    .hero-sub { margin:0; color:rgba(0,0,0,0.6); font-size:13px; }
+    .hero-actions { margin-left:auto; display:flex; gap:8px; }
+
+    .details-card { margin-top:16px; max-height: calc(100vh - 220px); overflow:hidden; }
+    .details-card mat-card-content { overflow:auto; padding-right:12px; }
+    .details-grid { display:grid; grid-template-columns: 240px 1fr; gap:16px; align-items:start; }
+    .details-grid .left { padding:8px; border-right:1px solid rgba(0,0,0,0.04); }
+    .muted { color:rgba(0,0,0,0.6); margin-top:8px; }
+    .field { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px dashed rgba(0,0,0,0.04); }
+    .label { color:rgba(0,0,0,0.6); font-size:13px; }
+    .value { font-weight:600; max-width:100%; word-break:break-word; }
+    .long-text { white-space:normal; word-break:break-all; }
+
+    @media (max-width: 720px) {
+      .details-grid { grid-template-columns: 1fr; }
+      .details-grid .left { border-right:none; border-bottom:1px solid rgba(0,0,0,0.04); }
+      .hero { flex-direction:column; align-items:flex-start; }
+      .hero-actions { margin-left:0; width:100%; justify-content:flex-end; }
+    }
+    `
+  ]
 })
 export class ProfileComponent implements OnInit {
   private userSignal = signal<apiClient.apiClient.User | undefined>(undefined);
@@ -77,6 +101,8 @@ export class ProfileComponent implements OnInit {
   constructor(public auth: AuthStateService, private router: Router) {}
 
   ngOnInit(): void {
+    console.log(this.user());
+    
     this.fetchUser();
   }
 
@@ -89,7 +115,18 @@ export class ProfileComponent implements OnInit {
     try {
       const resp = await sharedAxiosInstance.get(environment.apiBaseUrl + '/api/User/me');
       if (resp && resp.data) {
-        try { this.userSignal.set(apiClient.apiClient.User.fromJS(resp.data)); this.loading.set(false); return; } catch {}
+        // normalize common wrappers
+        let data: any = resp.data;
+        if (data.user) data = data.user;
+        else if (data.data) data = data.data;
+        else if (data.result) data = data.result;
+        try {
+          this.userSignal.set(apiClient.apiClient.User.fromJS(data));
+          this.loading.set(false);
+          return;
+        } catch (err) {
+          console.debug('Profile: unable to parse user from /api/User/me', data, err);
+        }
       }
     } catch (e) {
       // ignore and fall back
