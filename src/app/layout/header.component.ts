@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { UserMenuComponent } from './user-menu.component';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, MatToolbarModule, MatButtonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, MatToolbarModule, MatButtonModule, RouterLink, RouterLinkActive, UserMenuComponent],
   template: `
     <mat-toolbar color="primary" class="header-toolbar">
       <span class="logo">CreaPrint</span>
@@ -18,6 +19,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   <button mat-button routerLink="/about" routerLinkActive="active">À propos</button>
   <button mat-button routerLink="/contact" routerLinkActive="active">Contact</button>
       </nav>
+      <app-user-menu></app-user-menu>
     </mat-toolbar>
   `,
   styles: [`
