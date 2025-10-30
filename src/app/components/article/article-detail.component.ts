@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 // using simple styled chips instead of MatChips to avoid standalone import issues
 import { MatDividerModule } from '@angular/material/divider';
 import * as apiClient from '../../api-client';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ArticleService } from '../../services/article.service';
 
 @Component({
@@ -41,7 +41,7 @@ import { ArticleService } from '../../services/article.service';
 
           <div class="actions">
             <span class="spacer"></span>
-            <button mat-flat-button color="accent">
+            <button mat-flat-button color="accent" (click)="edit()">
               <mat-icon>edit</mat-icon>
               Éditer
             </button>
@@ -86,7 +86,7 @@ export class ArticleDetailComponent {
     this.articleSignal.set(a);
   }
 
-  constructor(private route: ActivatedRoute, private articleService: ArticleService) {}
+  constructor(private route: ActivatedRoute, private articleService: ArticleService, private router: Router) {}
 
   ngOnInit(): void {
     // Subscribe to route changes and fetch when an id is present if no input was provided
@@ -105,4 +105,10 @@ export class ArticleDetailComponent {
     });
   }
   @Output() back = new EventEmitter<void>();
+
+  edit() {
+    const a = this.articleSignal();
+    if (!a || !a.id) return;
+    this.router.navigate(['/articles', a.id, 'edit']);
+  }
 }

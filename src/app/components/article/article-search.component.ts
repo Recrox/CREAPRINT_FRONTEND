@@ -4,8 +4,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
-import { Subject } from 'rxjs';
-import { debounceTime, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-article-search',
@@ -24,25 +22,34 @@ import { debounceTime, takeUntil } from 'rxjs/operators';
 export class ArticleSearchComponent implements OnDestroy {
   @Output() search = new EventEmitter<string>();
   q = '';
-  private changes = new Subject<string>();
-  private destroy$ = new Subject<void>();
+  private timer: any = undefined;
 
-  constructor() {
-    this.changes.pipe(debounceTime(300), takeUntil(this.destroy$)).subscribe(v => this.search.emit(v));
-  }
+  constructor() {}
 
   onChange(v: string) {
-    this.changes.next(v ?? '');
+    // simple debounce with setTimeout to avoid rxjs operator import issues in different runtime setups
+    if (this.timer) {
+      clearTimeout(this.timer);
+    }
+    this.timer = setTimeout(() => {
+      this.search.emit(v ?? '');
+      this.timer = undefined;
+    }, 300);
   }
 
   clear() {
     this.q = '';
-    this.changes.next('');
+    if (this.timer) {
+      clearTimeout(this.timer);
+      this.timer = undefined;
+    }
+    this.search.emit('');
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-    this.changes.complete();
+    if (this.timer) {
+      clearTimeout(this.timer);
+      this.timer = undefined;
+    }
   }
 }

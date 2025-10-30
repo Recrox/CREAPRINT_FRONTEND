@@ -18,6 +18,10 @@ export const routes: Routes = [
 		loadComponent: () => import('./components/article/article-detail.component').then(m => m.ArticleDetailComponent)
 	},
 	{
+		path: 'articles/:id/edit',
+		loadComponent: () => import('./components/article/edit-article.component').then(m => m.EditArticleComponent)
+	},
+	{
 		path: 'contact',
 		loadComponent: () => import('./components/contact.component').then(m => m.ContactComponent)
 	}

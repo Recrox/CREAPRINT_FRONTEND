@@ -1,7 +1,7 @@
 import { Component, Input, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import * as apiClient from '../../api-client';
@@ -10,20 +10,20 @@ import { CartService } from '../../services/cart.service';
 @Component({
   selector: 'app-article-grid',
   standalone: true,
-  imports: [CommonModule, MatCardModule, RouterLink, MatButtonModule, MatIconModule],
+  imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule],
   template: `
     <div class="article-grid">
-      <mat-card *ngFor="let article of articlesList" class="article-card">
+      <mat-card *ngFor="let article of articlesList" class="article-card" style="cursor:pointer;" (click)="goTo(article)">
         <img mat-card-image src="https://placehold.co/400x200?text=Image+Article" alt="Image de l'article" />
         <mat-card-header>
-          <mat-card-title><a [routerLink]="['/articles', article.id]">#{{ article.id }} - {{ article.title }}</a></mat-card-title>
+          <mat-card-title>#{{ article.id }} - {{ article.title }}</mat-card-title>
           <mat-card-subtitle>{{ article.category?.name || 'Sans catégorie' }}</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
           <p>{{ article.content }}</p>
           <div style="margin-top:0.5rem;font-weight:bold;">Prix : {{ article.price | number:'1.2-2' }} €</div>
           <div style="margin-top:0.75rem;display:flex;justify-content:flex-end;">
-            <button mat-stroked-button color="primary" (click)="addToCart(article)">
+            <button mat-stroked-button color="primary" (click)="addToCart(article, $event)">
               <mat-icon>shopping_cart</mat-icon>
               &nbsp;Ajouter
             </button>
@@ -50,11 +50,17 @@ import { CartService } from '../../services/cart.service';
 export class ArticleGridComponent {
   @Input() articles: apiClient.apiClient.Article[] | Signal<apiClient.apiClient.Article[]> = [];
 
-  constructor(private cart: CartService) {}
+  constructor(private cart: CartService, private router: Router) {}
 
-  addToCart(article: apiClient.apiClient.Article) {
+  addToCart(article: apiClient.apiClient.Article, event?: Event) {
+    if (event) event.stopPropagation();
     if (!article?.id) return;
     this.cart.addItem(article.id, 1).subscribe({ next: () => {}, error: () => {} });
+  }
+
+  goTo(article: apiClient.apiClient.Article) {
+    if (!article?.id) return;
+    this.router.navigate(['/articles', article.id]);
   }
 
   get articlesList(): apiClient.apiClient.Article[] {

@@ -24,7 +24,7 @@ import * as apiClient from '../../api-client';
   imports: [CommonModule, FormsModule, MatCardModule, MatListModule, MatTableModule, ArticleDetailComponent, ArticleGridComponent, ArticleTableComponent, ArticleSearchComponent, MatSlideToggleModule, MatIconModule, MatPaginatorModule, MatProgressSpinnerModule],
   template: `
   <mat-card style="width:100%;max-width:none;margin-bottom:3rem;padding:2rem;">
-    <mat-card-title style="text-align:center;">Liste des articles</mat-card-title>
+    <mat-card-title style="text-align:center;margin-bottom:1rem;font-size:1.5rem;font-weight:600;letter-spacing:0.4px;">Liste des articles</mat-card-title>
     <mat-card-content>
       <div style="margin-bottom:1rem; display: flex; align-items: center; gap: 1rem;">
         <div style="flex:1;">

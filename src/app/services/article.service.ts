@@ -23,6 +23,10 @@ export class ArticleService {
     return from(this.client.articlesPOST(article));
   }
 
+  updateArticle(id: number, article: apiClient.apiClient.Article): Observable<void> {
+    return from(this.client.articlesPUT(id, article));
+  }
+
   getPagedArticles(page: number, pageSize: number): Observable<apiClient.apiClient.Article[]> {
     return from(this.client.paged(page, pageSize));
   }
