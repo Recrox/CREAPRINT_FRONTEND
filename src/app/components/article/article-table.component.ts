@@ -44,7 +44,7 @@ import * as apiClient from '../../api-client';
           </button>
           &nbsp;
           <button mat-icon-button color="warn" aria-label="Supprimer" (click)="delete(article, $event)">
-            <mat-icon>delete</mat-icon>
+            <mat-icon class="delete-icon">delete</mat-icon>
           </button>
         </td>
       </ng-container>
@@ -52,6 +52,11 @@ import * as apiClient from '../../api-client';
       <tr mat-row *matRowDef="let row; columns: displayedColumns;" style="cursor:pointer;" (click)="goTo(row)"></tr>
     </table>
   `
+    ,
+    styles: [`
+      /* color delete icon red */
+      .delete-icon { color: var(--mat-warn-foreground, #f44336); }
+    `]
 })
 export class ArticleTableComponent {
   @Input() articles: apiClient.apiClient.Article[] | Signal<apiClient.apiClient.Article[]> = [];

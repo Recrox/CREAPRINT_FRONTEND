@@ -31,7 +31,7 @@ import { CartService } from '../../services/cart.service';
             </div>
             <div>
               <button mat-icon-button color="warn" aria-label="Supprimer" (click)="delete(article, $event)">
-                <mat-icon>delete</mat-icon>
+                <mat-icon class="delete-icon">delete</mat-icon>
               </button>
             </div>
           </div>
@@ -52,6 +52,8 @@ import { CartService } from '../../services/cart.service';
       max-width: 290px; /* slightly narrower so rows fit tighter */
       margin: auto;
     }
+    /* make delete icons clearly red */
+    .delete-icon { color: var(--mat-warn-foreground, #f44336); }
   `]
 })
 export class ArticleGridComponent {

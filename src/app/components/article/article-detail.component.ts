@@ -50,7 +50,7 @@ import { ConfirmDialogComponent } from '../shared/confirm-dialog.component';
             </button>
             &nbsp;
             <button mat-icon-button color="warn" aria-label="Supprimer" (click)="deleteCurrent()">
-              <mat-icon>delete</mat-icon>
+              <mat-icon class="delete-icon">delete</mat-icon>
             </button>
           </div>
         </div>
@@ -76,6 +76,7 @@ import { ConfirmDialogComponent } from '../shared/confirm-dialog.component';
     .empty { margin:2rem; color:rgba(0,0,0,0.6); }
   .chip { display:inline-block; padding:4px 10px; border-radius:16px; background:#e0e0e0; color:#222; font-size:0.9rem; }
   .chip.accent { background:#ffd54f; }
+  .delete-icon { color: var(--mat-warn-foreground, #f44336); }
     @media (max-width:800px) {
       .detail-card { flex-direction:column; }
       .media { flex: 0 0 auto; width:100%; }
