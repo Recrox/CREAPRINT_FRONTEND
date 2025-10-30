@@ -27,6 +27,13 @@ export class ArticleService {
     return from(this.client.articlesPUT(id, article));
   }
 
+  /**
+   * Server-side search by title (uses ApiClient.search)
+   */
+  search(title?: string): Observable<apiClient.apiClient.Article[]> {
+    return from(this.client.search(title));
+  }
+
   getPagedArticles(page: number, pageSize: number): Observable<apiClient.apiClient.Article[]> {
     return from(this.client.paged(page, pageSize));
   }

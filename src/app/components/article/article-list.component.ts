@@ -7,6 +7,7 @@ import { ArticleDetailComponent } from './article-detail.component';
 import { ArticleGridComponent } from './article-grid.component';
 import { ArticleTableComponent } from './article-table.component';
 import { ArticleSearchComponent } from './article-search.component';
+import { ArticleListToolbarComponent } from './article-list-toolbar.component';
 import { FormsModule } from '@angular/forms';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
@@ -21,20 +22,12 @@ import * as apiClient from '../../api-client';
 @Component({
   selector: 'app-article-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatCardModule, MatListModule, MatTableModule, ArticleDetailComponent, ArticleGridComponent, ArticleTableComponent, ArticleSearchComponent, MatSlideToggleModule, MatIconModule, MatPaginatorModule, MatProgressSpinnerModule],
+  imports: [CommonModule, FormsModule, MatCardModule, MatListModule, MatTableModule, ArticleDetailComponent, ArticleGridComponent, ArticleTableComponent, ArticleListToolbarComponent, MatSlideToggleModule, MatIconModule, MatPaginatorModule, MatProgressSpinnerModule],
   template: `
   <mat-card style="width:100%;max-width:none;margin-bottom:3rem;padding:2rem;">
     <mat-card-title style="text-align:center;margin-bottom:1rem;font-size:1.5rem;font-weight:600;letter-spacing:0.4px;">Liste des articles</mat-card-title>
     <mat-card-content>
-      <div style="margin-bottom:1rem; display: flex; align-items: center; gap: 1rem;">
-        <div style="flex:1;">
-          <app-article-search (search)="onSearch($event)"></app-article-search>
-        </div>
-        <mat-slide-toggle color="primary" [checked]="isGridMode()" (change)="isGridMode.set($event.checked)" style="margin-left:0.5rem;">
-          <mat-icon>{{ isGridMode() ? 'grid_view' : 'table_chart' }}</mat-icon>
-          <span style="margin-left:0.5rem;">{{ isGridMode() ? 'Grille' : 'Tableau' }}</span>
-        </mat-slide-toggle>
-      </div>
+      <app-article-list-toolbar (search)="onSearch($event)" [isGridMode]="isGridMode"></app-article-list-toolbar>
 
       <div *ngIf="!loading() && pagedArticles().length && !selectedArticle()">
         <ng-container *ngIf="!isGridMode(); else gridView">
@@ -129,19 +122,14 @@ export class ArticleListComponent implements OnInit {
       return;
     }
 
-    // For simplicity, fetch all items once then filter locally
+    // Use server-side search by title (new API)
     this.loading.set(true);
-    this.articleService.getAllArticles().subscribe({
-      next: all => {
-        const arr = Array.isArray(all) ? all : [];
-        const filtered = arr.filter(a => {
-          const title = (a.title || '').toString().toLowerCase();
-          const content = (a.content || '').toString().toLowerCase();
-          return title.includes(q) || content.includes(q);
-        });
-        this.pagedArticles.set(filtered as any);
-        this.articles.set(filtered as any);
-        this.total.set(filtered.length);
+    this.articleService.search(q).subscribe({
+      next: results => {
+        const arr = Array.isArray(results) ? results : [];
+        this.pagedArticles.set(arr);
+        this.articles.set(arr);
+        this.total.set(arr.length);
         this.loading.set(false);
         this.cdr.markForCheck();
       },
