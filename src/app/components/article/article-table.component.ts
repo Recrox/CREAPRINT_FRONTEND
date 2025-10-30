@@ -2,12 +2,13 @@ import { Component, Input, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
+import { RouterLink } from '@angular/router';
 import * as apiClient from '../../api-client';
 
 @Component({
   selector: 'app-article-table',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatSortModule],
+  imports: [CommonModule, MatTableModule, MatSortModule, RouterLink],
   template: `
   <table mat-table [dataSource]="articlesList" matSort class="mat-elevation-z1" style="width:100%;min-width:600px;">
       <ng-container matColumnDef="id">
@@ -17,7 +18,7 @@ import * as apiClient from '../../api-client';
       <ng-container matColumnDef="title">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Titre</th>
         <td mat-cell *matCellDef="let article">
-          <a href="#" (click)="selectArticle(article); $event.preventDefault();">{{ article.title }}</a>
+          <a [routerLink]="['/articles', article.id]">{{ article.title }}</a>
         </td>
       </ng-container>
       <ng-container matColumnDef="content">
@@ -39,7 +40,6 @@ import * as apiClient from '../../api-client';
 })
 export class ArticleTableComponent {
   @Input() articles: apiClient.apiClient.Article[] | Signal<apiClient.apiClient.Article[]> = [];
-  @Input() selectArticle!: (article: apiClient.apiClient.Article) => void;
   displayedColumns: string[] = ['id', 'title', 'content', 'category', 'price'];
 
   get articlesList(): apiClient.apiClient.Article[] {

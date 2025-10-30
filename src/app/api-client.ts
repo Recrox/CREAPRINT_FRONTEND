@@ -27,6 +27,20 @@ export interface IApiClient {
      */
     articlesGET(id: number,  cancelToken?: CancelToken): Promise<Article>;
     /**
+     * @param body (optional) 
+     * @return OK
+     */
+    articlesPUT(id: number, body?: Article | undefined,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    articlesPATCH(id: number, body?: Operation[] | undefined,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @return OK
+     */
+    articlesDELETE(id: number,  cancelToken?: CancelToken): Promise<void>;
+    /**
      * @param page (optional) 
      * @param pageSize (optional) 
      * @return OK
@@ -36,6 +50,25 @@ export interface IApiClient {
      * @return OK
      */
     count( cancelToken?: CancelToken): Promise<number>;
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    authenticate(body?: LoginRequest | undefined,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    token(body?: Body | undefined,  cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    user(body?: CreateUserRequest | undefined,  cancelToken?: CancelToken): Promise<User>;
+    /**
+     * @return OK
+     */
+    userAll( cancelToken?: CancelToken): Promise<any[]>;
 }
 
 export class ApiClient implements IApiClient {
@@ -124,7 +157,7 @@ export class ApiClient implements IApiClient {
             method: "POST",
             url: url_,
             headers: {
-                "Content-Type": "application/json",
+                "Content-Type": "application/json-patch+json",
                 "Accept": "application/json"
             },
             cancelToken
@@ -217,6 +250,166 @@ export class ApiClient implements IApiClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
         return Promise.resolve<Article>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    articlesPUT(id: number, body?: Article | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/Articles/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "PUT",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json-patch+json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processArticlesPUT(_response);
+        });
+    }
+
+    protected processArticlesPUT(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    articlesPATCH(id: number, body?: Operation[] | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/Articles/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "PATCH",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json-patch+json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processArticlesPATCH(_response);
+        });
+    }
+
+    protected processArticlesPATCH(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    articlesDELETE(id: number, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/Articles/{id}";
+        if (id === undefined || id === null)
+            throw new globalThis.Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "DELETE",
+            url: url_,
+            headers: {
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processArticlesDELETE(_response);
+        });
+    }
+
+    protected processArticlesDELETE(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
     }
 
     /**
@@ -338,6 +531,306 @@ export class ApiClient implements IApiClient {
         }
         return Promise.resolve<number>(null as any);
     }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    authenticate(body?: LoginRequest | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/User/authenticate";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json-patch+json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processAuthenticate(_response);
+        });
+    }
+
+    protected processAuthenticate(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    token(body?: Body | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/User/token";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = Object.keys(body as any).map((key) => {
+            return encodeURIComponent(key) + '=' + encodeURIComponent((body as any)[key]);
+        }).join('&')
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processToken(_response);
+        });
+    }
+
+    protected processToken(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    user(body?: CreateUserRequest | undefined, cancelToken?: CancelToken): Promise<User> {
+        let url_ = this.baseUrl + "/api/User";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json-patch+json",
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processUser(_response);
+        });
+    }
+
+    protected processUser(response: AxiosResponse): Promise<User> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = User.fromJS(resultData200);
+            return Promise.resolve<User>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<User>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    userAll( cancelToken?: CancelToken): Promise<any[]> {
+        let url_ = this.baseUrl + "/api/User";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processUserAll(_response);
+        });
+    }
+
+    protected processUserAll(response: AxiosResponse): Promise<any[]> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(item);
+            }
+            else {
+                result200 = null as any;
+            }
+            return Promise.resolve<any[]>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<any[]>(null as any);
+    }
+}
+
+export class CreateUserRequest implements ICreateUserRequest {
+    username?: string | undefined;
+    password?: string | undefined;
+
+    constructor(data?: ICreateUserRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.username = _data["username"];
+            this.password = _data["password"];
+        }
+    }
+
+    static fromJS(data: any): CreateUserRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateUserRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["username"] = this.username;
+        data["password"] = this.password;
+        return data;
+    }
+}
+
+export interface ICreateUserRequest {
+    username?: string | undefined;
+    password?: string | undefined;
+}
+
+export class LoginRequest implements ILoginRequest {
+    username?: string | undefined;
+    password?: string | undefined;
+
+    constructor(data?: ILoginRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.username = _data["username"];
+            this.password = _data["password"];
+        }
+    }
+
+    static fromJS(data: any): LoginRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new LoginRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["username"] = this.username;
+        data["password"] = this.password;
+        return data;
+    }
+}
+
+export interface ILoginRequest {
+    username?: string | undefined;
+    password?: string | undefined;
 }
 
 export class Article implements IArticle {
@@ -419,7 +912,6 @@ export class Category implements ICategory {
     updatedBy?: string | undefined;
     updatedOn?: Date | undefined;
     name!: string | undefined;
-    articles?: Article[] | undefined;
 
     constructor(data?: ICategory) {
         if (data) {
@@ -438,11 +930,6 @@ export class Category implements ICategory {
             this.updatedBy = _data["updatedBy"];
             this.updatedOn = _data["updatedOn"] ? new Date(_data["updatedOn"].toString()) : undefined as any;
             this.name = _data["name"];
-            if (Array.isArray(_data["articles"])) {
-                this.articles = [] as any;
-                for (let item of _data["articles"])
-                    this.articles!.push(Article.fromJS(item));
-            }
         }
     }
 
@@ -461,11 +948,6 @@ export class Category implements ICategory {
         data["updatedBy"] = this.updatedBy;
         data["updatedOn"] = this.updatedOn ? this.updatedOn.toISOString() : undefined as any;
         data["name"] = this.name;
-        if (Array.isArray(this.articles)) {
-            data["articles"] = [];
-            for (let item of this.articles)
-                data["articles"].push(item ? item.toJSON() : undefined as any);
-        }
         return data;
     }
 }
@@ -477,7 +959,189 @@ export interface ICategory {
     updatedBy?: string | undefined;
     updatedOn?: Date | undefined;
     name: string | undefined;
-    articles?: Article[] | undefined;
+}
+
+export class User implements IUser {
+    id?: number;
+    createdBy?: string | undefined;
+    createdOn?: Date;
+    updatedBy?: string | undefined;
+    updatedOn?: Date | undefined;
+    username!: string | undefined;
+    passwordHash?: string | undefined;
+    rights?: UserRights;
+
+    constructor(data?: IUser) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.createdBy = _data["createdBy"];
+            this.createdOn = _data["createdOn"] ? new Date(_data["createdOn"].toString()) : undefined as any;
+            this.updatedBy = _data["updatedBy"];
+            this.updatedOn = _data["updatedOn"] ? new Date(_data["updatedOn"].toString()) : undefined as any;
+            this.username = _data["username"];
+            this.passwordHash = _data["passwordHash"];
+            this.rights = _data["rights"];
+        }
+    }
+
+    static fromJS(data: any): User {
+        data = typeof data === 'object' ? data : {};
+        let result = new User();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["createdBy"] = this.createdBy;
+        data["createdOn"] = this.createdOn ? this.createdOn.toISOString() : undefined as any;
+        data["updatedBy"] = this.updatedBy;
+        data["updatedOn"] = this.updatedOn ? this.updatedOn.toISOString() : undefined as any;
+        data["username"] = this.username;
+        data["passwordHash"] = this.passwordHash;
+        data["rights"] = this.rights;
+        return data;
+    }
+}
+
+export interface IUser {
+    id?: number;
+    createdBy?: string | undefined;
+    createdOn?: Date;
+    updatedBy?: string | undefined;
+    updatedOn?: Date | undefined;
+    username: string | undefined;
+    passwordHash?: string | undefined;
+    rights?: UserRights;
+}
+
+export enum UserRights {
+    _0 = 0,
+    _1 = 1,
+}
+
+export class Operation implements IOperation {
+    operationType?: OperationType;
+    path?: string | undefined;
+    op?: string | undefined;
+    from?: string | undefined;
+    value?: any | undefined;
+
+    constructor(data?: IOperation) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.operationType = _data["operationType"];
+            this.path = _data["path"];
+            this.op = _data["op"];
+            this.from = _data["from"];
+            this.value = _data["value"];
+        }
+    }
+
+    static fromJS(data: any): Operation {
+        data = typeof data === 'object' ? data : {};
+        let result = new Operation();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["operationType"] = this.operationType;
+        data["path"] = this.path;
+        data["op"] = this.op;
+        data["from"] = this.from;
+        data["value"] = this.value;
+        return data;
+    }
+}
+
+export interface IOperation {
+    operationType?: OperationType;
+    path?: string | undefined;
+    op?: string | undefined;
+    from?: string | undefined;
+    value?: any | undefined;
+}
+
+export enum OperationType {
+    _0 = 0,
+    _1 = 1,
+    _2 = 2,
+    _3 = 3,
+    _4 = 4,
+    _5 = 5,
+    _6 = 6,
+}
+
+export class Body implements IBody {
+    username?: string;
+    password?: string;
+
+    [key: string]: any;
+
+    constructor(data?: IBody) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.username = _data["username"];
+            this.password = _data["password"];
+        }
+    }
+
+    static fromJS(data: any): Body {
+        data = typeof data === 'object' ? data : {};
+        let result = new Body();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["username"] = this.username;
+        data["password"] = this.password;
+        return data;
+    }
+}
+
+export interface IBody {
+    username?: string;
+    password?: string;
+
+    [key: string]: any;
 }
 
 export class SwaggerException extends Error {

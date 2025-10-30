@@ -8,7 +8,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
   imports: [CommonModule, MatToolbarModule],
   template: `
     <mat-toolbar color="primary" class="footer-toolbar">
-      <span>&copy; 2025 CreaPrint. Tous droits réservés.</span>
+      <span>&copy; {{ currentYear }} CreaPrint. Tous droits réservés.</span>
     </mat-toolbar>
   `,
   styles: [`
@@ -22,4 +22,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     }
   `]
 })
-export class FooterComponent {}
+export class FooterComponent {
+  currentYear = new Date().getFullYear();
+}

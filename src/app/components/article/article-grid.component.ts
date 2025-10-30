@@ -1,18 +1,19 @@
 import { Component, Input, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
+import { RouterLink } from '@angular/router';
 import * as apiClient from '../../api-client';
 
 @Component({
   selector: 'app-article-grid',
   standalone: true,
-  imports: [CommonModule, MatCardModule],
+  imports: [CommonModule, MatCardModule, RouterLink],
   template: `
     <div class="article-grid">
       <mat-card *ngFor="let article of articlesList" class="article-card">
         <img mat-card-image src="https://placehold.co/400x200?text=Image+Article" alt="Image de l'article" />
         <mat-card-header>
-          <mat-card-title>#{{ article.id }} - {{ article.title }}</mat-card-title>
+          <mat-card-title><a [routerLink]="['/articles', article.id]">#{{ article.id }} - {{ article.title }}</a></mat-card-title>
           <mat-card-subtitle>{{ article.category?.name || 'Sans catégorie' }}</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>

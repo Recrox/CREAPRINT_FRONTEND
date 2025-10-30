@@ -25,19 +25,42 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
       position: sticky;
       top: 0;
       z-index: 100;
+      display: flex;
+      gap: 0.75rem;
     }
     .logo {
       font-weight: bold;
       font-size: 1.3rem;
       letter-spacing: 1px;
+      user-select: none;
+      color: var(--header-logo-color, #fff);
     }
     .spacer {
       flex: 1 1 auto;
     }
+    /* Simpler, theme-friendly header styles */
+    nav button {
+      color: inherit; /* use toolbar contrast color */
+      font-weight: 500;
+      text-transform: none;
+      letter-spacing: .4px;
+      transition: background .12s ease;
+      border-radius: 6px;
+      padding: 0 .7rem;
+      min-width: 64px;
+    }
+    nav button:hover:not(.active) {
+      background: rgba(255,255,255,0.08);
+    }
     nav button.active {
-      font-weight: bold;
-      color: #fff;
-      background: rgba(255,255,255,0.1);
+      font-weight: 600;
+      background: rgba(255,255,255,0.12);
+    }
+    /* Keep toolbar color controlled by Material theme (mat-toolbar color="primary") */
+    .header-toolbar {
+      padding-left: 1rem;
+      padding-right: 1rem;
+      align-items: center;
     }
   `]
 })
