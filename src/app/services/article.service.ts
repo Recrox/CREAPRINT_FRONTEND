@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as apiClient from '../api-client';
 import { environment } from '../../environments/environment';
+import { sharedAxiosInstance } from './http.service';
 import { Observable, from } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
@@ -8,7 +9,7 @@ export class ArticleService {
   private client: apiClient.apiClient.ApiClient;
 
   constructor() {
-  this.client = new apiClient.apiClient.ApiClient(environment.apiBaseUrl);
+    this.client = new apiClient.apiClient.ApiClient(environment.apiBaseUrl, sharedAxiosInstance);
   }
 
   getAllArticles(): Observable<apiClient.apiClient.Article[]> {
