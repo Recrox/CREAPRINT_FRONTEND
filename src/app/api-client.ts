@@ -100,6 +100,15 @@ export interface IApiClient {
      * @return OK
      */
     logout( cancelToken?: CancelToken): Promise<void>;
+    /**
+     * @return OK
+     */
+    me2( cancelToken?: CancelToken): Promise<User>;
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    changePassword(body?: ChangePasswordRequest | undefined,  cancelToken?: CancelToken): Promise<void>;
 }
 
 export class ApiClient implements IApiClient {
@@ -1143,6 +1152,109 @@ export class ApiClient implements IApiClient {
         }
         return Promise.resolve<void>(null as any);
     }
+
+    /**
+     * @return OK
+     */
+    me2( cancelToken?: CancelToken): Promise<User> {
+        let url_ = this.baseUrl + "/api/User/me";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processMe2(_response);
+        });
+    }
+
+    protected processMe2(response: AxiosResponse): Promise<User> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = User.fromJS(resultData200);
+            return Promise.resolve<User>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<User>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    changePassword(body?: ChangePasswordRequest | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/User/change-password";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json-patch+json",
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processChangePassword(_response);
+        });
+    }
+
+    protected processChangePassword(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
 }
 
 export class AddItemRequest implements IAddItemRequest {
@@ -1185,9 +1297,50 @@ export interface IAddItemRequest {
     quantity?: number;
 }
 
+export class ChangePasswordRequest implements IChangePasswordRequest {
+    currentPassword?: string | undefined;
+    newPassword?: string | undefined;
+
+    constructor(data?: IChangePasswordRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.currentPassword = _data["currentPassword"];
+            this.newPassword = _data["newPassword"];
+        }
+    }
+
+    static fromJS(data: any): ChangePasswordRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new ChangePasswordRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["currentPassword"] = this.currentPassword;
+        data["newPassword"] = this.newPassword;
+        return data;
+    }
+}
+
+export interface IChangePasswordRequest {
+    currentPassword?: string | undefined;
+    newPassword?: string | undefined;
+}
+
 export class CreateUserRequest implements ICreateUserRequest {
     username?: string | undefined;
     password?: string | undefined;
+    email?: string | undefined;
 
     constructor(data?: ICreateUserRequest) {
         if (data) {
@@ -1202,6 +1355,7 @@ export class CreateUserRequest implements ICreateUserRequest {
         if (_data) {
             this.username = _data["username"];
             this.password = _data["password"];
+            this.email = _data["email"];
         }
     }
 
@@ -1216,6 +1370,7 @@ export class CreateUserRequest implements ICreateUserRequest {
         data = typeof data === 'object' ? data : {};
         data["username"] = this.username;
         data["password"] = this.password;
+        data["email"] = this.email;
         return data;
     }
 }
@@ -1223,6 +1378,7 @@ export class CreateUserRequest implements ICreateUserRequest {
 export interface ICreateUserRequest {
     username?: string | undefined;
     password?: string | undefined;
+    email?: string | undefined;
 }
 
 export class LoginRequest implements ILoginRequest {
@@ -1402,6 +1558,7 @@ export class User implements IUser {
     username!: string | undefined;
     passwordHash?: string | undefined;
     rights?: UserRights;
+    email!: string | undefined;
 
     constructor(data?: IUser) {
         if (data) {
@@ -1422,6 +1579,7 @@ export class User implements IUser {
             this.username = _data["username"];
             this.passwordHash = _data["passwordHash"];
             this.rights = _data["rights"];
+            this.email = _data["email"];
         }
     }
 
@@ -1442,6 +1600,7 @@ export class User implements IUser {
         data["username"] = this.username;
         data["passwordHash"] = this.passwordHash;
         data["rights"] = this.rights;
+        data["email"] = this.email;
         return data;
     }
 }
@@ -1455,11 +1614,12 @@ export interface IUser {
     username: string | undefined;
     passwordHash?: string | undefined;
     rights?: UserRights;
+    email: string | undefined;
 }
 
 export enum UserRights {
-    _0 = 0,
-    _1 = 1,
+    None = "None",
+    Admin = "Admin",
 }
 
 export class Operation implements IOperation {
@@ -1515,13 +1675,13 @@ export interface IOperation {
 }
 
 export enum OperationType {
-    _0 = 0,
-    _1 = 1,
-    _2 = 2,
-    _3 = 3,
-    _4 = 4,
-    _5 = 5,
-    _6 = 6,
+    Add = "Add",
+    Remove = "Remove",
+    Replace = "Replace",
+    Move = "Move",
+    Copy = "Copy",
+    Test = "Test",
+    Invalid = "Invalid",
 }
 
 export class Body implements IBody {

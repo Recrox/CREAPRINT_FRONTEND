@@ -47,6 +47,7 @@ import { signal as ngSignal } from '@angular/core';
                 </div>
                 <div class="right">
                   <div class="field"><span class="label">Nom d'utilisateur</span><span class="value">{{ user()?.username || '—' }}</span></div>
+                  <div class="field"><span class="label">Email</span><span class="value">{{ user()?.email || '—' }}</span></div>
                   <div class="field"><span class="label">Droits</span><span class="value">{{ rightsLabel() }} <span class="muted">({{ user()?.rights ?? '—' }})</span></span></div>
                   <div class="field password-field">
                     <span class="label">Mot de passe (hash)</span>
