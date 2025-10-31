@@ -93,6 +93,11 @@ export interface IApiClient {
      */
     userAll( cancelToken?: CancelToken): Promise<any[]>;
     /**
+     * @param token (optional) 
+     * @return OK
+     */
+    activate(token?: string | undefined,  cancelToken?: CancelToken): Promise<void>;
+    /**
      * @return OK
      */
     userGET(id: number,  cancelToken?: CancelToken): Promise<void>;
@@ -1057,6 +1062,58 @@ export class ApiClient implements IApiClient {
     }
 
     /**
+     * @param token (optional) 
+     * @return OK
+     */
+    activate(token?: string | undefined, cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/User/activate?";
+        if (token === null)
+            throw new globalThis.Error("The parameter 'token' cannot be null.");
+        else if (token !== undefined)
+            url_ += "token=" + encodeURIComponent("" + token) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processActivate(_response);
+        });
+    }
+
+    protected processActivate(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
      * @return OK
      */
     userGET(id: number, cancelToken?: CancelToken): Promise<void> {
@@ -1341,6 +1398,7 @@ export class CreateUserRequest implements ICreateUserRequest {
     username?: string | undefined;
     password?: string | undefined;
     email?: string | undefined;
+    rights?: number;
 
     constructor(data?: ICreateUserRequest) {
         if (data) {
@@ -1356,6 +1414,7 @@ export class CreateUserRequest implements ICreateUserRequest {
             this.username = _data["username"];
             this.password = _data["password"];
             this.email = _data["email"];
+            this.rights = _data["rights"];
         }
     }
 
@@ -1371,6 +1430,7 @@ export class CreateUserRequest implements ICreateUserRequest {
         data["username"] = this.username;
         data["password"] = this.password;
         data["email"] = this.email;
+        data["rights"] = this.rights;
         return data;
     }
 }
@@ -1379,6 +1439,7 @@ export interface ICreateUserRequest {
     username?: string | undefined;
     password?: string | undefined;
     email?: string | undefined;
+    rights?: number;
 }
 
 export class LoginRequest implements ILoginRequest {
@@ -1559,6 +1620,9 @@ export class User implements IUser {
     passwordHash?: string | undefined;
     rights?: UserRights;
     email!: string | undefined;
+    isActive?: boolean;
+    activationToken?: string | undefined;
+    activationTokenExpires?: Date | undefined;
 
     constructor(data?: IUser) {
         if (data) {
@@ -1580,6 +1644,9 @@ export class User implements IUser {
             this.passwordHash = _data["passwordHash"];
             this.rights = _data["rights"];
             this.email = _data["email"];
+            this.isActive = _data["isActive"];
+            this.activationToken = _data["activationToken"];
+            this.activationTokenExpires = _data["activationTokenExpires"] ? new Date(_data["activationTokenExpires"].toString()) : undefined as any;
         }
     }
 
@@ -1601,6 +1668,9 @@ export class User implements IUser {
         data["passwordHash"] = this.passwordHash;
         data["rights"] = this.rights;
         data["email"] = this.email;
+        data["isActive"] = this.isActive;
+        data["activationToken"] = this.activationToken;
+        data["activationTokenExpires"] = this.activationTokenExpires ? this.activationTokenExpires.toISOString() : undefined as any;
         return data;
     }
 }
@@ -1615,11 +1685,17 @@ export interface IUser {
     passwordHash?: string | undefined;
     rights?: UserRights;
     email: string | undefined;
+    isActive?: boolean;
+    activationToken?: string | undefined;
+    activationTokenExpires?: Date | undefined;
 }
 
 export enum UserRights {
     None = "None",
     Admin = "Admin",
+    Vendeur = "Vendeur",
+    Artisan = "Artisan",
+    Commercial = "Commercial",
 }
 
 export class Operation implements IOperation {
