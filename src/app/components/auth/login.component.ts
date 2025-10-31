@@ -7,13 +7,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
+  imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule, RouterModule],
   template: `
   <div style="display:flex;justify-content:center;align-items:center;height:100%;padding:2rem;">
     <mat-card style="width:100%;max-width:420px;padding:1.5rem;">
@@ -43,6 +43,10 @@ import { AuthService } from '../../services/auth.service';
           </div>
 
           <div *ngIf="errorMessage()" style="color:#b00020;margin-top:1rem;">{{ errorMessage() }}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1rem;gap:8px;">
+            <a routerLink="/forgot-password" style="font-size:0.9rem;color:var(--primary);text-decoration:underline;">Mot de passe oublié ?</a>
+            <a routerLink="/signup" style="font-size:0.9rem;color:var(--primary);text-decoration:underline;">S'inscrire</a>
+          </div>
         </form>
       </mat-card-content>
     </mat-card>
