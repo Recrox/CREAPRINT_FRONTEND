@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import * as apiClient from '../../api-client';
-import { CartService } from '../../services/cart.service';
+import { BasketService } from '../../services/basket.service';
 
 @Component({
   selector: 'app-article-grid',
@@ -60,7 +60,7 @@ export class ArticleGridComponent {
   @Input() articles: apiClient.apiClient.Article[] | Signal<apiClient.apiClient.Article[]> = [];
   @Output() deleteArticle = new EventEmitter<number>();
 
-  constructor(private cart: CartService, private router: Router) {}
+  constructor(private cart: BasketService, private router: Router) {}
 
   addToCart(article: apiClient.apiClient.Article, event?: Event) {
     if (event) event.stopPropagation();

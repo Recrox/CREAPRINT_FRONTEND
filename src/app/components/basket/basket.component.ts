@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { CartService } from '../../services/cart.service';
+import { BasketService } from '../../services/basket.service';
 import { AuthStateService } from '../../services/auth-state.service';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -148,9 +148,21 @@ import { firstValueFrom } from 'rxjs';
 export class BasketComponent implements OnInit {
   items = signal<any[]>([]);
   loading = signal(false);
-  total = signal<number>(0);
+  // derive total from items so it's always accurate
+  total = computed(() => {
+    try {
+      const arr = this.items() || [];
+      return arr.reduce((acc: number, it: any) => {
+        const price = Number(it.article?.price ?? it.price ?? it.unitPrice ?? it.amount) || 0;
+        const qty = Number(it.quantity ?? it.qty ?? 1) || 1;
+        return acc + price * qty;
+      }, 0);
+    } catch {
+      return 0;
+    }
+  });
 
-  constructor(private cart: CartService, public auth: AuthStateService, private snack: MatSnackBar, private router: Router) {}
+  constructor(private cart: BasketService, public auth: AuthStateService, private snack: MatSnackBar, private router: Router) {}
 
   ngOnInit(): void {
     if (this.auth.isLoggedInSignal()()) {
@@ -165,22 +177,10 @@ export class BasketComponent implements OnInit {
         console.log('Basket response:', b);
         const arr = Array.isArray(b?.items) ? b.items : Array.isArray(b) ? b : [];
         this.items.set(arr);
-        // compute total
-        try {
-          const t = arr.reduce((acc: number, it: any) => {
-            const price = (it.price ?? it.unitPrice ?? it.amount) || 0;
-            const qty = (it.quantity || it.qty || 1) || 1;
-            return acc + (Number(price) * Number(qty));
-          }, 0);
-          this.total.set(t);
-        } catch {
-          this.total.set(0);
-        }
         this.loading.set(false);
       },
       error: () => {
         this.items.set([]);
-        this.total.set(0);
         this.loading.set(false);
       }
     });

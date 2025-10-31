@@ -5,7 +5,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { CartService } from '../../services/cart.service';
+import { BasketService } from '../../services/basket.service';
 import * as apiClient from '../../api-client';
 
 @Component({
@@ -63,7 +63,7 @@ export class ArticleTableComponent {
   @Output() deleteArticle = new EventEmitter<number>();
   displayedColumns: string[] = ['id', 'title', 'content', 'category', 'price', 'actions'];
 
-  constructor(private cart: CartService, private router: Router) {}
+  constructor(private cart: BasketService, private router: Router) {}
 
   addToCart(article: apiClient.apiClient.Article, event?: Event) {
     if (event) event.stopPropagation();

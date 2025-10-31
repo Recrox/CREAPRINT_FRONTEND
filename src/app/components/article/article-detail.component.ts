@@ -10,7 +10,7 @@ import * as apiClient from '../../api-client';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ArticleService } from '../../services/article.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { CartService } from '../../services/cart.service';
+import { BasketService } from '../../services/basket.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog.component';
 
@@ -102,7 +102,7 @@ export class ArticleDetailComponent {
     this.loadedFromRoute = false;
   }
 
-  constructor(private route: ActivatedRoute, private articleService: ArticleService, private router: Router, private snackBar: MatSnackBar, private dialog: MatDialog, private cart: CartService) {}
+  constructor(private route: ActivatedRoute, private articleService: ArticleService, private router: Router, private snackBar: MatSnackBar, private dialog: MatDialog, private cart: BasketService) {}
 
   ngOnInit(): void {
     // Subscribe to route changes and fetch when an id is present if no input was provided
