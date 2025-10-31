@@ -1,5 +1,6 @@
 import { Component, signal, OnInit } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { CommonModule } from '@angular/common';
 // import { HomeComponent } from './components/home.component';
 import { HeaderComponent } from './layout/header.component';
 import { SidebarComponent } from './layout/sidebar.component';
@@ -9,12 +10,16 @@ import { AuthStateService } from './services/auth-state.service';
 import { environment } from '../environments/environment';
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, HeaderComponent, SidebarComponent, FooterComponent],
+  imports: [CommonModule, RouterOutlet, HeaderComponent, SidebarComponent, FooterComponent, ],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
 export class App implements OnInit {
   protected readonly title = signal('CreaPrint');
+  protected readonly production = environment.production;
+  // expose component type for dynamic outlet
+  // show dev cookie manager when not in production, or when URL has ?devCookies=1
+  protected readonly showDevCookie = !environment.production || new URL(window.location.href).searchParams.has('devCookies');
 
   constructor(private router: Router, private auth: AuthService, private authState: AuthStateService) {}
 

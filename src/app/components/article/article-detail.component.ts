@@ -10,6 +10,7 @@ import * as apiClient from '../../api-client';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ArticleService } from '../../services/article.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { CartService } from '../../services/cart.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog.component';
 
@@ -44,6 +45,10 @@ import { ConfirmDialogComponent } from '../shared/confirm-dialog.component';
 
           <div class="actions">
             <span class="spacer"></span>
+            <button mat-stroked-button color="primary" (click)="addToCart()">
+              <mat-icon>shopping_cart</mat-icon>
+              &nbsp;Ajouter
+            </button>
             <button mat-flat-button color="accent" (click)="edit()">
               <mat-icon>edit</mat-icon>
               Éditer
@@ -97,7 +102,7 @@ export class ArticleDetailComponent {
     this.loadedFromRoute = false;
   }
 
-  constructor(private route: ActivatedRoute, private articleService: ArticleService, private router: Router, private snackBar: MatSnackBar, private dialog: MatDialog) {}
+  constructor(private route: ActivatedRoute, private articleService: ArticleService, private router: Router, private snackBar: MatSnackBar, private dialog: MatDialog, private cart: CartService) {}
 
   ngOnInit(): void {
     // Subscribe to route changes and fetch when an id is present if no input was provided
@@ -148,5 +153,18 @@ export class ArticleDetailComponent {
 
     // Otherwise, notify parent to handle deletion
     this.deleteArticle.emit(a.id);
+  }
+
+  addToCart() {
+    const a = this.articleSignal();
+    if (!a || !a.id) return;
+    this.cart.addItem(a.id, 1).subscribe({
+      next: () => {
+        this.snackBar.open('Article ajouté au panier', undefined, { duration: 2500 });
+      },
+      error: () => {
+        this.snackBar.open('Impossible d\'ajouter l\'article au panier', undefined, { duration: 3000 });
+      }
+    });
   }
 }
