@@ -10,7 +10,7 @@ import * as apiClient from '../../api-client';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ArticleService } from '../../services/article.service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoService, TranslocoModule } from '@ngneat/transloco';
 import { BasketService } from '../../services/basket.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog.component';
@@ -18,7 +18,7 @@ import { ConfirmDialogComponent } from '../shared/confirm-dialog.component';
 @Component({
   selector: 'app-article-detail',
   standalone: true,
-  imports: [CommonModule, MatCardModule, /* new */ MatButtonModule, MatProgressSpinnerModule, MatIconModule, MatDividerModule, MatSnackBarModule],
+  imports: [CommonModule, MatCardModule, /* new */ MatButtonModule, MatProgressSpinnerModule, MatIconModule, MatDividerModule, MatSnackBarModule, TranslocoModule],
   template: `
     <div class="detail-root">
       <div class="spinner" *ngIf="loading()">
@@ -167,8 +167,9 @@ export class ArticleDetailComponent {
         this.snackBar.open(msg, undefined, { duration: 2500 });
       },
       error: () => {
-        const msg = this.transloco.translate('app.add_failed');
-        this.snackBar.open(msg, undefined, { duration: 3000 });
+        this.transloco.selectTranslate('app.add_failed').subscribe(msg => {
+          this.snackBar.open(msg, undefined, { duration: 3000 });
+        });
       }
     });
   }

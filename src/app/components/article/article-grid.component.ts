@@ -2,7 +2,7 @@ import { Component, Input, Signal, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { Router } from '@angular/router';
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoService, TranslocoModule } from '@ngneat/transloco';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -12,7 +12,7 @@ import { BasketService } from '../../services/basket.service';
 @Component({
   selector: 'app-article-grid',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule, MatSnackBarModule],
+  imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule, MatSnackBarModule, TranslocoModule],
   template: `
     <div class="article-grid">
       <mat-card *ngFor="let article of articlesList" class="article-card" style="cursor:pointer;" (click)="goTo(article)">
@@ -73,8 +73,10 @@ export class ArticleGridComponent {
         this.snackBar.open(msg, undefined, { duration: 2500 });
       },
       error: () => {
-        const msg = this.transloco.translate('app.add_failed');
-        this.snackBar.open(msg, undefined, { duration: 3000 });
+        // use selectTranslate so we wait for translations to be available
+        this.transloco.selectTranslate('app.add_failed').subscribe(msg => {
+          this.snackBar.open(msg, undefined, { duration: 3000 });
+        });
       }
     });
   }

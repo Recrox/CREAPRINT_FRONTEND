@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import { Router } from '@angular/router';
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoService, TranslocoModule } from '@ngneat/transloco';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -13,7 +13,7 @@ import * as apiClient from '../../api-client';
 @Component({
   selector: 'app-article-table',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatSortModule, MatButtonModule, MatIconModule, MatSnackBarModule],
+  imports: [CommonModule, MatTableModule, MatSortModule, MatButtonModule, MatIconModule, MatSnackBarModule, TranslocoModule],
   template: `
   <table mat-table [dataSource]="articlesList" matSort class="mat-elevation-z1" style="width:100%;min-width:600px;">
       <ng-container matColumnDef="id">
@@ -79,8 +79,9 @@ export class ArticleTableComponent {
         this.snackBar.open(msg, undefined, { duration: 2500 });
       },
       error: () => {
-        const msg = this.transloco.translate('app.add_failed');
-        this.snackBar.open(msg, undefined, { duration: 3000 });
+        this.transloco.selectTranslate('app.add_failed').subscribe(msg => {
+          this.snackBar.open(msg, undefined, { duration: 3000 });
+        });
       }
     });
   }
