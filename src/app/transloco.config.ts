@@ -10,7 +10,6 @@ export class HttpTranslocoLoader implements TranslocoLoader {
   getTranslation(lang: string): Observable<Record<string, any>> {
     const url = `assets/i18n/${lang}.json`;
     return this.http.get<Record<string, any>>(url).pipe(
-      tap(() => console.debug(`[Transloco] loaded translations from ${url}`)),
       catchError(err => {
         // Log a clearer message for debugging (network / 404 / permission issues)
         console.error(`[Transloco] Failed to load translations from ${url}:`, err);
