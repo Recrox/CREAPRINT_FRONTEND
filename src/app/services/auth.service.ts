@@ -54,11 +54,12 @@ export class AuthService {
           const resp = await sharedAxiosInstance.post(environment.apiBaseUrl + '/api/User/token', form.toString(), {
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
           });
-          // Try to read token from response body or data.token
-          const token = resp?.data?.access_token || resp?.data?.token || resp?.data;
-          if (typeof token === 'string' && token.length > 10) {
-            TokenService.setToken(token);
-          }
+          // Try to read token(s) from response body
+          const data = resp?.data || {};
+          const access = data?.access_token || data?.token || data?.accessToken || data;
+          const refresh = data?.refresh_token || data?.refreshToken || data?.refresh;
+          if (typeof access === 'string' && access.length > 10) TokenService.setToken(access);
+          if (typeof refresh === 'string') TokenService.setRefreshToken(refresh);
         } catch (e) {
           // ignore token fetch errors — authenticate may still have set cookie-based auth
         }
@@ -73,7 +74,7 @@ export class AuthService {
 
   logout(): void {
     // Clear token and local state.
-    try { TokenService.setToken(null); } catch {}
+    try { TokenService.setToken(null); TokenService.setRefreshToken(null); } catch {}
     this.authState.setLoggedIn(false);
   }
 }
