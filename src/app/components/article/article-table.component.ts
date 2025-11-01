@@ -90,9 +90,10 @@ export class ArticleTableComponent {
         this.snackBar.open(msg, undefined, { duration: 2500 });
       },
       error: () => {
-        this.transloco.selectTranslate('app.add_failed').subscribe(msg => {
-          this.snackBar.open(msg, undefined, { duration: 3000 });
-        });
+        // use synchronous translate() to avoid creating a subscription that
+        // would re-open the snackbar whenever the active language changes
+        const msg = this.transloco.translate('app.add_failed');
+        this.snackBar.open(msg, undefined, { duration: 3000 });
       }
     });
   }
