@@ -27,7 +27,16 @@ import { ConfirmDialogComponent } from '../shared/confirm-dialog.component';
 
       <mat-card *ngIf="!loading() && article()" class="detail-card">
         <div class="media">
-          <img class="media-img" [src]="imageFor(article()) || 'https://placehold.co/640x360?text=Article+Image'" [alt]="article()?.title || 'Article image'" />
+          <div class="main-image-wrap">
+            <button mat-icon-button class="overlay prev" aria-label="Prev image" (click)="prevImage()"><mat-icon>chevron_left</mat-icon></button>
+            <img class="media-img" [src]="selectedImageUrl() || 'https://placehold.co/640x360?text=Article+Image'" [alt]="article()?.title || 'Article image'" />
+            <button mat-icon-button class="overlay next" aria-label="Next image" (click)="nextImage()"><mat-icon>chevron_right</mat-icon></button>
+          </div>
+          <div class="thumbs" *ngIf="imageList().length > 1">
+            <div class="thumb-list">
+              <img *ngFor="let u of imageList(); let i = index" class="thumb" [src]="u" [class.active]="i === selectedImage()" (click)="selectImage(i)" [alt]="article()?.title + ' thumb ' + (i+1)" />
+            </div>
+          </div>
         </div>
         <div class="content">
           <div class="header">
@@ -75,14 +84,18 @@ import { ConfirmDialogComponent } from '../shared/confirm-dialog.component';
     `
     .detail-root { width:100%; display:flex; justify-content:center; }
     .spinner { margin: 2rem; display:flex; align-items:center; justify-content:center; }
-    .detail-card { display:flex; gap:1.5rem; padding:1rem; max-width:1000px; width:100%; }
-    .media { flex: 0 0 360px; display:flex; align-items:center; justify-content:center; }
-    .media-img { width:100%; height:auto; border-radius:8px; object-fit:cover; }
+  .detail-card { display:flex; gap:1rem; padding:0.75rem; max-width:1000px; width:100%; }
+  .media { flex: 0 0 480px; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:8px; }
+  .main-image-wrap { position:relative; width:100%; max-width:640px; height:360px; display:flex; align-items:center; justify-content:center; overflow:hidden; border-radius:8px; background:linear-gradient(180deg,#f0f0f0,#e8e8e8); }
+  .media-img { width:100%; height:100%; border-radius:8px; object-fit:cover; display:block; }
+  .overlay { position:absolute; top:50%; transform:translateY(-50%); background:rgba(0,0,0,0.45); color:#fff; z-index:10; }
+  .overlay.prev { left:8px; }
+  .overlay.next { right:8px; }
     .content { flex:1; display:flex; flex-direction:column; }
     .header { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
   .title { margin:0 0 0.75rem 0; font-size:1.6rem; }
     .meta { display:flex; align-items:center; gap:0.5rem; }
-  mat-divider { margin: 0.5rem 0 1rem 0; }
+  mat-divider { margin: 0.5rem 0 0.5rem 0; }
   .body { margin-top:0; flex:1; }
     .actions { display:flex; align-items:center; gap:0.5rem; margin-top:1rem; }
     .spacer { flex:1; }
@@ -90,10 +103,17 @@ import { ConfirmDialogComponent } from '../shared/confirm-dialog.component';
   .chip { display:inline-block; padding:4px 10px; border-radius:16px; background:#e0e0e0; color:#222; font-size:0.9rem; }
   .chip.accent { background:#ffd54f; }
   .delete-icon { color: var(--mat-warn-foreground, #f44336); }
-    @media (max-width:800px) {
+    @media (max-width:1000px) {
       .detail-card { flex-direction:column; }
-      .media { flex: 0 0 auto; width:100%; }
+      .media { width:100%; flex:0 0 auto; }
+      .main-image-wrap { max-width:100%; height:320px; }
     }
+
+  .thumbs { width:100%; display:flex; justify-content:center; margin-bottom:4px; }
+    .thumb-list { display:flex; gap:8px; align-items:center; overflow:auto; padding:6px 4px; }
+    .thumb { width:72px; height:48px; object-fit:cover; border-radius:6px; cursor:pointer; opacity:0.8; border:2px solid transparent; }
+    .thumb.active { border-color:var(--mat-primary, #1976d2); opacity:1; transform:scale(1.02); }
+    .thumb:hover { opacity:1; transform:scale(1.02); }
     `
   ]
 })
@@ -102,6 +122,30 @@ export class ArticleDetailComponent {
   article: Signal<apiClient.apiClient.Article | undefined> = this.articleSignal;
   loading = signal(false);
   private loadedFromRoute = false;
+  // image carousel state
+  selectedImageIndexSignal = signal<number>(0);
+
+  // list of image URLs
+  imageList(): string[] {
+    const a = this.articleSignal();
+    if (!a) return [];
+    const imgs = (a as any).images as Array<any> | undefined;
+    if (!imgs || imgs.length === 0) return [];
+    return imgs.map(i => i && i.url).filter(Boolean) as string[];
+  }
+
+  selectedImage(): number { return this.selectedImageIndexSignal(); }
+
+  selectedImageUrl(): string | undefined {
+    const list = this.imageList();
+    const idx = this.selectedImageIndexSignal();
+    if (!list || list.length === 0) return undefined;
+    return list[Math.min(Math.max(0, idx), list.length - 1)];
+  }
+
+  selectImage(i: number) { this.selectedImageIndexSignal.set(i); }
+  prevImage() { const list = this.imageList(); if (!list.length) return; this.selectedImageIndexSignal.set((this.selectedImageIndexSignal() - 1 + list.length) % list.length); }
+  nextImage() { const list = this.imageList(); if (!list.length) return; this.selectedImageIndexSignal.set((this.selectedImageIndexSignal() + 1) % list.length); }
 
   @Input('article')
   set articleInput(a: apiClient.apiClient.Article | undefined) {
