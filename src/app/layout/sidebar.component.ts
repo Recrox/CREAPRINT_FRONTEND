@@ -12,7 +12,7 @@ import { NavService } from '../services/nav.service';
   imports: [CommonModule, MatSidenavModule, MatListModule, RouterLink, RouterLinkActive],
   template: `
     <mat-sidenav-container class="sidebar-container">
-      <mat-sidenav mode="side" opened class="sidebar">
+      <mat-sidenav mode="side" [opened]="nav.sidebarOpen()" class="sidebar">
         <mat-nav-list>
           <a mat-list-item [routerLink]="nav.route()" routerLinkActive="active">Accueil</a>
           <a mat-list-item [routerLink]="nav.route('articles')" routerLinkActive="active">Articles</a>

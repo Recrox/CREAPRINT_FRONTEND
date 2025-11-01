@@ -24,6 +24,9 @@ import { NavService } from '../services/nav.service';
         </svg>
         CreaPrint
       </a>
+      <button mat-icon-button aria-label="Toggle sidebar" class="hamburger" (click)="nav.toggleSidebar()">
+        <mat-icon>menu</mat-icon>
+      </button>
       <span class="spacer"></span>
       <nav>
   <button mat-button [routerLink]="['/', transloco.getActiveLang() || 'fr']" routerLinkActive="active">Accueil</button>
@@ -116,7 +119,7 @@ import { NavService } from '../services/nav.service';
   `]
 })
 export class HeaderComponent {
-  constructor(public theme: ThemeService, public transloco: TranslocoService, private router: Router, private nav: NavService) {}
+  constructor(public theme: ThemeService, public transloco: TranslocoService, private router: Router, public nav: NavService) {}
 
   changeLang(lang: string) {
     this.transloco.setActiveLang(lang);

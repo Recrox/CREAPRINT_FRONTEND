@@ -2,10 +2,18 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoService } from '@ngneat/transloco';
 import { environment } from '../../environments/environment';
+import { signal } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class NavService {
+  // Sidebar open state: default to true on wide screens
+  public sidebarOpen = signal<boolean>(true);
+
   constructor(private transloco: TranslocoService) {}
+
+  toggleSidebar() { this.sidebarOpen.set(!this.sidebarOpen()); }
+  openSidebar() { this.sidebarOpen.set(true); }
+  closeSidebar() { this.sidebarOpen.set(false); }
 
   // returns an array suitable for Router.navigate or routerLink
   route(...parts: string[]): any[] {
