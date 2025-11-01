@@ -1,0 +1,16 @@
+{
+  "app": {
+    "title": "CreaPrint",
+    "home": "Accueil",
+    "articles": "Articles",
+    "about": "À propos",
+    "contact": "Contact",
+    "add": "Ajouter",
+    "delete": "Supprimer",
+    "cart": "Panier",
+    "profile": "Profil",
+    "login": "Connexion",
+    "signup": "Inscription",
+    "forgot_password": "Mot de passe oublié"
+  }
+}

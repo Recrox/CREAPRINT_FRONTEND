@@ -3,14 +3,16 @@ import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { UserMenuComponent } from './user-menu.component';
 import { ThemeService } from '../services/theme.service';
+import { TranslocoService } from '@ngneat/transloco';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, MatToolbarModule, MatButtonModule, MatIconModule, RouterLink, RouterLinkActive, UserMenuComponent],
+  imports: [CommonModule, MatToolbarModule, MatButtonModule, MatIconModule, MatSelectModule, RouterLink, RouterLinkActive, UserMenuComponent],
   template: `
     <mat-toolbar color="primary" class="header-toolbar">
       <a class="logo" routerLink="/" aria-label="Accueil">
@@ -28,6 +30,14 @@ import { ThemeService } from '../services/theme.service';
         <button mat-button routerLink="/about" routerLinkActive="active">À propos</button>
         <button mat-button routerLink="/contact" routerLinkActive="active">Contact</button>
       </nav>
+      <mat-form-field appearance="outline" class="lang-select" style="margin-left:8px;">
+        <mat-select [value]="transloco.getActiveLang()" (selectionChange)="changeLang($event.value)">
+          <mat-option value="fr">FR</mat-option>
+          <mat-option value="nl">NL</mat-option>
+          <mat-option value="de">DE</mat-option>
+          <mat-option value="en">EN</mat-option>
+        </mat-select>
+      </mat-form-field>
       <button mat-icon-button aria-label="Toggle theme" (click)="theme.toggle()">
         <mat-icon>brightness_6</mat-icon>
       </button>
@@ -85,8 +95,30 @@ import { ThemeService } from '../services/theme.service';
       padding-right: 1rem;
       align-items: center;
     }
+  .lang-select { width: 86px; }
+  /* Make the select look like the other buttons in the toolbar */
+  .lang-select .mat-form-field-wrapper { padding-bottom: 0; }
+  .lang-select .mat-form-field-flex { background: transparent; }
+  .lang-select .mat-form-field-underline { display: none; }
+  .lang-select .mat-form-field-outline { display: none; }
+  /* Ensure the selected value and arrow inherit toolbar color (override Material defaults) */
+  .lang-select .mat-select-trigger,
+  .lang-select .mat-select-value,
+  .lang-select .mat-select-value-text,
+  .lang-select .mat-select-placeholder,
+  .lang-select .mat-select-arrow {
+    color: inherit !important;
+    fill: currentColor !important;
+  }
+  /* Reduce the padding inside the trigger to better match nav buttons */
+  .lang-select .mat-select-trigger { padding: 0 6px !important; }
   `]
 })
 export class HeaderComponent {
-  constructor(public theme: ThemeService) {}
+  constructor(public theme: ThemeService, public transloco: TranslocoService) {}
+
+  changeLang(lang: string) {
+    this.transloco.setActiveLang(lang);
+    try { localStorage.setItem('lang', lang); } catch (e) { /* ignore */ }
+  }
 }

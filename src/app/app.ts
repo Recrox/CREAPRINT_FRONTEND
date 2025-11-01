@@ -8,6 +8,7 @@ import { FooterComponent } from './layout/footer.component';
 import { AuthService } from './services/auth.service';
 import { AuthStateService } from './services/auth-state.service';
 import { environment } from '../environments/environment';
+import { TranslocoService } from '@ngneat/transloco';
 @Component({
   selector: 'app-root',
   imports: [CommonModule, RouterOutlet, HeaderComponent, SidebarComponent, FooterComponent, ],
@@ -21,11 +22,22 @@ export class App implements OnInit {
   // show dev cookie manager when not in production, or when URL has ?devCookies=1
   protected readonly showDevCookie = !environment.production || new URL(window.location.href).searchParams.has('devCookies');
 
-  constructor(private router: Router, private auth: AuthService, private authState: AuthStateService) {}
+  constructor(private router: Router, private auth: AuthService, private authState: AuthStateService, private transloco: TranslocoService) {}
 
   ngOnInit(): void {
     // restore auth state from token or server session, then enable debug auto-login
-    this.auth.checkAuth().then(() => this.connectAdminInDebug());
+    this.auth.checkAuth().then(() => {
+      // set persisted language or fall back to browser language
+      const saved = (() => { try { return localStorage.getItem('lang'); } catch (e) { return null; } })();
+      if (saved) {
+        this.transloco.setActiveLang(saved);
+      } else {
+        const nav = navigator.language?.split('-')[0] || 'fr';
+        const pick = ['fr','en','de','nl'].includes(nav) ? nav : 'fr';
+        this.transloco.setActiveLang(pick);
+      }
+      this.connectAdminInDebug();
+    });
   }
 
   // Auto-login when navigating to base '/' for debug convenience (only in non-production)

@@ -1,0 +1,16 @@
+{
+  "app": {
+    "title": "CreaPrint",
+    "home": "Start",
+    "articles": "Artikelen",
+    "about": "Over",
+    "contact": "Contact",
+    "add": "Toevoegen",
+    "delete": "Verwijderen",
+    "cart": "Winkelwagen",
+    "profile": "Profiel",
+    "login": "Inloggen",
+    "signup": "Registreren",
+    "forgot_password": "Wachtwoord vergeten"
+  }
+}
