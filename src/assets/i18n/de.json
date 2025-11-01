@@ -14,6 +14,8 @@
     "forgot_password": "Passwort vergessen",
     "added_to_cart": "Zum Warenkorb hinzugefügt: {{title}}",
     "add_failed": "Hinzufügen fehlgeschlagen"
+    ,"in_stock": "Auf Lager: {{count}}"
+    ,"out_of_stock": "Ausverkauft"
   },
   "about": {
     "title": "Über",

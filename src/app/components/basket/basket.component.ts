@@ -228,7 +228,15 @@ export class BasketComponent implements OnInit {
 
   increment(item: any) {
     try {
-  this.cart.addItem(item.article?.id || item.articleId || item.id, 1).subscribe({ next: () => { this.load(); this.cart.getTotal().subscribe({ next: t => this.backendTotal.set(typeof t === 'number' ? t : 0), error: () => this.backendTotal.set(0) }); }, error: (e) => { console.error('increment failed', e); this.transloco.selectTranslate('app.add_failed').pipe(take(1)).subscribe(msg => { this.snack.open(msg, 'OK', { duration: 2500 }); }); } });
+      // if article has stock info, prevent increasing beyond stock
+      const stock = item.article?.stock;
+      const currentQty = item.quantity || item.qty || 1;
+      if (typeof stock === 'number' && currentQty >= stock) {
+        // show out of stock message
+        this.transloco.selectTranslate('app.out_of_stock').pipe(take(1)).subscribe(msg => { this.snack.open(msg, 'OK', { duration: 2500 }); });
+        return;
+      }
+      this.cart.addItem(item.article?.id || item.articleId || item.id, 1).subscribe({ next: () => { this.load(); this.cart.getTotal().subscribe({ next: t => this.backendTotal.set(this.parseTotal(t)), error: () => this.backendTotal.set(0) }); }, error: (e) => { console.error('increment failed', e); this.transloco.selectTranslate('app.add_failed').pipe(take(1)).subscribe(msg => { this.snack.open(msg, 'OK', { duration: 2500 }); }); } });
     } catch (err) {
       console.error('increment error', err);
     }

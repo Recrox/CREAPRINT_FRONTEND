@@ -37,11 +37,22 @@ import * as apiClient from '../../api-client';
         <td mat-cell *matCellDef="let article">{{ article.price | number:'1.2-2' }} €</td>
       </ng-container>
 
+      <ng-container matColumnDef="stock">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Stock</th>
+        <td mat-cell *matCellDef="let article">
+          <ng-container *ngIf="article.stock !== undefined">
+            <span *ngIf="article.stock > 0">{{ 'app.in_stock' | transloco:{count: article.stock} }}</span>
+            <span *ngIf="article.stock <= 0">{{ 'app.out_of_stock' | transloco }}</span>
+          </ng-container>
+          <span *ngIf="article.stock === undefined">—</span>
+        </td>
+      </ng-container>
+
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let article">
           <div class="actions-cell">
-            <button mat-stroked-button color="primary" (click)="addToCart(article, $event)">
+            <button mat-stroked-button color="primary" (click)="addToCart(article, $event)" [disabled]="article.stock !== undefined ? article.stock <= 0 : false">
               <mat-icon>shopping_cart</mat-icon>
               &nbsp;Ajouter
             </button>
@@ -66,7 +77,7 @@ import * as apiClient from '../../api-client';
 export class ArticleTableComponent {
   @Input() articles: apiClient.apiClient.Article[] | Signal<apiClient.apiClient.Article[]> = [];
   @Output() deleteArticle = new EventEmitter<number>();
-  displayedColumns: string[] = ['id', 'title', 'content', 'category', 'price', 'actions'];
+  displayedColumns: string[] = ['id', 'title', 'content', 'category', 'price', 'stock', 'actions'];
 
   constructor(private cart: BasketService, private router: Router, public transloco: TranslocoService, private snackBar: MatSnackBar) {}
 

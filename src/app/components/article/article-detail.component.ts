@@ -33,8 +33,14 @@ import { ConfirmDialogComponent } from '../shared/confirm-dialog.component';
           <div class="header">
             <h2 class="title">{{ article()?.title }}</h2>
             <div class="meta">
-              <span class="chip" *ngIf="article()?.category?.name">{{ article()?.category?.name }}</span>
-              <span class="chip accent">Prix: {{ article()?.price | number:'1.2-2' }} €</span>
+                <ng-container *ngIf="article() as a">
+                  <span class="chip" *ngIf="a.category?.name">{{ a.category?.name }}</span>
+                  <span class="chip accent">Prix: {{ a.price | number:'1.2-2' }} €</span>
+                  <span class="chip" *ngIf="a.stock !== undefined">
+                    <ng-container *ngIf="a.stock > 0">{{ 'app.in_stock' | transloco:{count: a.stock} }}</ng-container>
+                    <ng-container *ngIf="a.stock <= 0">{{ 'app.out_of_stock' | transloco }}</ng-container>
+                  </span>
+                </ng-container>
             </div>
           </div>
 
@@ -74,9 +80,10 @@ import { ConfirmDialogComponent } from '../shared/confirm-dialog.component';
     .media-img { width:100%; height:auto; border-radius:8px; object-fit:cover; }
     .content { flex:1; display:flex; flex-direction:column; }
     .header { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
-    .title { margin:0 0 0.5rem 0; font-size:1.6rem; }
+  .title { margin:0 0 0.75rem 0; font-size:1.6rem; }
     .meta { display:flex; align-items:center; gap:0.5rem; }
-    .body { margin-top:1rem; flex:1; }
+  mat-divider { margin: 0.5rem 0 1rem 0; }
+  .body { margin-top:0; flex:1; }
     .actions { display:flex; align-items:center; gap:0.5rem; margin-top:1rem; }
     .spacer { flex:1; }
     .empty { margin:2rem; color:rgba(0,0,0,0.6); }

@@ -13,7 +13,9 @@
     "signup": "Inscription",
     "forgot_password": "Mot de passe oublié",
     "added_to_cart": "Ajouté au panier : {{title}}",
-    "add_failed": "Impossible d'ajouter au panier"
+    "add_failed": "Impossible d'ajouter au panier",
+    "in_stock": "En stock : {{count}}",
+    "out_of_stock": "Rupture de stock"
   },
   "about": {
     "title": "À propos",

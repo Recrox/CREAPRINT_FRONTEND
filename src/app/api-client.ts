@@ -1603,6 +1603,7 @@ export class Article implements IArticle {
     price!: number;
     categoryId?: number | undefined;
     category?: Category;
+    stock?: number;
 
     constructor(data?: IArticle) {
         if (data) {
@@ -1625,6 +1626,7 @@ export class Article implements IArticle {
             this.price = _data["price"];
             this.categoryId = _data["categoryId"];
             this.category = _data["category"] ? Category.fromJS(_data["category"]) : undefined as any;
+            this.stock = _data["stock"];
         }
     }
 
@@ -1647,6 +1649,7 @@ export class Article implements IArticle {
         data["price"] = this.price;
         data["categoryId"] = this.categoryId;
         data["category"] = this.category ? this.category.toJSON() : undefined as any;
+        data["stock"] = this.stock;
         return data;
     }
 }
@@ -1662,6 +1665,7 @@ export interface IArticle {
     price: number;
     categoryId?: number | undefined;
     category?: Category;
+    stock?: number;
 }
 
 export class Category implements ICategory {

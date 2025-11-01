@@ -14,6 +14,8 @@
     "forgot_password": "Wachtwoord vergeten",
     "added_to_cart": "Toegevoegd aan winkelwagen: {{title}}",
     "add_failed": "Toevoegen mislukt"
+    ,"in_stock": "Op voorraad: {{count}}"
+    ,"out_of_stock": "Uitverkocht"
   },
   "about": {
     "title": "Over",

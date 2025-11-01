@@ -14,6 +14,8 @@
     "forgot_password": "Forgot password",
     "added_to_cart": "Added to cart: {{title}}",
     "add_failed": "Unable to add to cart"
+    ,"in_stock": "In stock: {{count}}"
+    ,"out_of_stock": "Out of stock"
   },
   "about": {
     "title": "About",

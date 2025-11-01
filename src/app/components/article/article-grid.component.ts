@@ -25,9 +25,15 @@ import { BasketService } from '../../services/basket.service';
         <mat-card-content>
           <p>{{ article.content }}</p>
           <div style="margin-top:0.5rem;font-weight:bold;">Prix : {{ article.price | number:'1.2-2' }} €</div>
+            <div style="margin-top:0.25rem;font-size:0.9rem;color:rgba(0,0,0,0.7);">
+              <ng-container *ngIf="article.stock !== undefined">
+                <span *ngIf="article.stock > 0">{{ 'app.in_stock' | transloco:{count: article.stock} }}</span>
+                <span *ngIf="article.stock <= 0">{{ 'app.out_of_stock' | transloco }}</span>
+              </ng-container>
+            </div>
           <div style="margin-top:0.75rem;display:flex;justify-content:space-between;align-items:center;">
             <div>
-              <button mat-stroked-button color="primary" (click)="addToCart(article, $event)">
+              <button mat-stroked-button color="primary" (click)="addToCart(article, $event)" [disabled]="article.stock !== undefined && article.stock <= 0">
                 <mat-icon>shopping_cart</mat-icon>
                 &nbsp;Ajouter
               </button>
