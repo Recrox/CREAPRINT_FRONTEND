@@ -12,6 +12,7 @@ import { BasketService } from '../../services/basket.service';
 import { AuthStateService } from '../../services/auth-state.service';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import * as apiClient from '../../api-client';
 
 @Component({
   selector: 'app-basket',
@@ -50,24 +51,24 @@ import { firstValueFrom } from 'rxjs';
               </div>
 
               <div class="details">
-                <div class="name">{{ it.article?.title || it.title || it.name || ('Article ' + (it.articleId || it.id || '')) }}</div>
-                <div class="meta">ID: <span class="mono">{{ it.articleId || it.id || it.itemId }}</span></div>
-                <div class="price-small">Prix unitaire: {{ (it.article?.price ?? it.price ?? it.unitPrice ?? it.amount) | number:'1.2-2' }} €</div>
+                <div class="name">{{ it.article?.title || ('Article ' + (it.articleId || it.id || '')) }}</div>
+                <div class="meta">ID: <span class="mono">{{ it.articleId || it.id }}</span></div>
+                <div class="price-small">Prix unitaire: {{ unitPriceOf(it) | number:'1.2-2' }} €</div>
               </div>
 
               <div class="controls">
                 <div class="qty-controls">
                   <button mat-mini-button (click)="decrement(it)"><mat-icon>remove</mat-icon></button>
-                  <div class="qty-display">{{ it.quantity || it.qty || 1 }}</div>
+                  <div class="qty-display">{{ quantityOf(it) }}</div>
                   <button mat-mini-button (click)="increment(it)"><mat-icon>add</mat-icon></button>
                 </div>
 
-                <div class="line-price">{{ ((it.article?.price ?? it.price ?? it.unitPrice ?? it.amount) * (it.quantity || it.qty || 1)) | number:'1.2-2' }} €</div>
+                <div class="line-price">{{ linePriceOf(it) | number:'1.2-2' }} €</div>
                 <div class="row-actions">
                   <button class="fav-btn" mat-icon-button aria-label="Ajouter aux favoris" title="Ajouter aux favoris">
                     <mat-icon>star_border</mat-icon>
                   </button>
-                  <button class="delete-btn" mat-icon-button aria-label="Supprimer" title="Supprimer" (click)="remove(it.id || it.itemId)">
+                    <button class="delete-btn" mat-icon-button aria-label="Supprimer" title="Supprimer" (click)="remove(it.id)">
                     <mat-icon>delete</mat-icon>
                   </button>
                 </div>
@@ -90,39 +91,107 @@ import { firstValueFrom } from 'rxjs';
     </mat-card>
   `,
   styles: [
-    `:host { display:block; }
-    .basket-card { max-width:980px; margin:28px auto; padding:0; display:block; box-sizing:border-box; }
-    .card-header { display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border-bottom:1px solid rgba(0,0,0,0.06); }
-    .card-header .title { font-size:1.25rem; font-weight:600; }
-    .card-header .subtitle { color:rgba(0,0,0,0.6); font-size:0.9rem; }
-    .content { padding:16px 20px; }
+    `:host {
+      display: block;
+    }
+
+    .basket-card {
+      max-width: 980px;
+      margin: 28px auto;
+      padding: 0;
+      box-sizing: border-box;
+      display: block;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .card-header .title {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .card-header .subtitle {
+      color: rgba(0,0,0,0.6);
+      font-size: 0.9rem;
+    }
+
+    .content {
+      padding: 16px 20px;
+    }
+
     .loading { display:flex; justify-content:center; padding:24px 0; }
-    .empty { text-align:center; padding:36px 0; color:rgba(0,0,0,0.6); }
-    .empty-illustration { font-size:48px; }
-    .empty-text { margin-top:12px; font-size:1.05rem; }
-    .items { display:flex; flex-direction:column; gap:12px; }
-    /* Force rows to remain horizontal even if global styles interfere */
-    .item-row { display:flex !important; flex-direction:row !important; align-items:center !important; gap:16px !important; padding:12px; border:1px solid rgba(0,0,0,0.05); border-radius:8px; background:transparent; }
-    .thumb { width:72px; height:72px; flex:0 0 72px; display:flex; align-items:center; justify-content:center; }
-    .thumb img { width:72px; height:72px; object-fit:cover; border-radius:6px; display:block; }
-    .thumb-placeholder { width:72px; height:72px; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.04); border-radius:6px; color:rgba(0,0,0,0.6); }
+
+    .empty {
+      text-align: center;
+      padding: 36px 0;
+      color: rgba(0,0,0,0.6);
+    }
+
+    .empty-illustration { font-size: 48px; }
+    .empty-text { margin-top: 12px; font-size: 1.05rem; }
+
+    .items { display: flex; flex-direction: column; gap: 18px; }
+
+    /* Ensure rows stay horizontal and have breathing room */
+    .item-row {
+      display:flex !important;
+      flex-direction:row !important;
+      align-items:center !important;
+      gap:20px !important;
+      padding:14px;
+      border:1px solid rgba(0,0,0,0.05);
+      border-radius:8px;
+      background: transparent;
+    }
+
+    .thumb {
+      width:88px;
+      height:88px;
+      flex:0 0 88px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .thumb img { width:88px; height:88px; object-fit:cover; border-radius:8px; display:block; }
+
+    .thumb-placeholder { width:88px; height:88px; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.04); border-radius:8px; color:rgba(0,0,0,0.6); }
+
     .details { flex:1 1 auto; min-width:0; overflow:hidden; }
     .name { font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .meta { margin-top:6px; color:rgba(0,0,0,0.6); font-size:0.85rem; }
-    .price-small { margin-top:6px; color:rgba(0,0,0,0.75); font-size:0.95rem; }
-    .controls { display:flex; flex-direction:column; align-items:flex-end; gap:8px; width:160px; flex:0 0 160px; }
-  .qty-controls { display:flex; align-items:center; gap:8px; }
+    .meta { margin-top:8px; color:rgba(0,0,0,0.6); font-size:0.85rem; }
+    .price-small { margin-top:8px; color:rgba(0,0,0,0.75); font-size:0.95rem; }
+
+    .controls {
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      gap:10px;
+      width:180px;
+      flex:0 0 180px;
+    }
+
+    .qty-controls { display:flex; align-items:center; gap:8px; }
     .qty-controls button.mat-mini-button, .qty-controls button.mat-mini-fab { min-width:36px !important; height:28px !important; padding:0 6px !important; border-radius:6px !important; }
     .qty-controls button.mat-mini-button mat-icon, .qty-controls button.mat-mini-fab mat-icon { font-size:20px; }
-    .qty-display { min-width:28px; text-align:center; }
-  .line-price { font-weight:600; }
-  .row-actions { display:flex; gap:8px; align-items:center; }
-  .fav-btn mat-icon { color: #d6b200; } /* subtle gold for star */
-  .delete-btn mat-icon { color: #fff; }
-  .delete-btn { background: #d32f2f; border-radius:6px; }
-  .delete-btn:hover { background: #b71c1c; }
-    /* style the icon delete button */
+    .qty-display { min-width:34px; text-align:center; }
+
+    .line-price { font-weight:600; }
+    .row-actions { display:flex; gap:8px; align-items:center; }
+
+    .fav-btn mat-icon { color: #d6b200; }
+    .delete-btn mat-icon { color: #fff; }
+    .delete-btn { background: #d32f2f; border-radius:6px; }
+    .delete-btn:hover { background: #b71c1c; }
+
     button.mat-icon-button { width:36px; height:36px; }
+
     .card-footer { display:flex; justify-content:space-between; align-items:center; padding:12px 20px; border-top:1px solid rgba(0,0,0,0.06); background:transparent; }
     .summary { min-width:220px; }
     .summary-line { display:flex; justify-content:space-between; font-weight:600; }
@@ -137,38 +206,46 @@ import { firstValueFrom } from 'rxjs';
     :host-context(body.dark-theme) .price-small,
     :host-context(body.dark-theme) .summary-note { color: rgba(230,238,246,0.85) !important; }
 
-  :host-context(body.dark-theme) .item-row { border-color: rgba(255,255,255,0.03) !important; background: rgba(255,255,255,0.01); }
-  :host-context(body.dark-theme) .thumb-placeholder { background: rgba(255,255,255,0.02); color: rgba(230,238,246,0.7); }
-  :host-context(body.dark-theme) .fav-btn mat-icon { color: #ffd766 !important; }
-  :host-context(body.dark-theme) .delete-btn { background: #c62828 !important; }
+    :host-context(body.dark-theme) .item-row { border-color: rgba(255,255,255,0.03) !important; background: rgba(255,255,255,0.01); }
+    :host-context(body.dark-theme) .thumb-placeholder { background: rgba(255,255,255,0.02); color: rgba(230,238,246,0.7); }
+    :host-context(body.dark-theme) .fav-btn mat-icon { color: #ffd766 !important; }
+    :host-context(body.dark-theme) .delete-btn { background: #c62828 !important; }
     :host-context(body.dark-theme) .basket-card { background: transparent; }
 
     /* Mobile tweaks */
-    @media (max-width:720px) { .item-row { flex-direction:row; } .controls { width:120px; } .card-footer { flex-direction:column; align-items:stretch; gap:8px; } }
+    @media (max-width:720px) {
+      .item-row { flex-direction: row; }
+      .controls { width: 140px; }
+      .thumb, .thumb img, .thumb-placeholder { width:64px; height:64px; }
+      .card-footer { flex-direction:column; align-items:stretch; gap:8px; }
+    }
   `]
 })
 export class BasketComponent implements OnInit {
-  items = signal<any[]>([]);
+  // Basket items as returned by the API client DTO
+  items = signal<apiClient.apiClient.BasketItemDto[]>([]);
   loading = signal(false);
   // total provided by backend API
   backendTotal = signal<number>(0);
 
-  private parseTotal(v: any): number {
+  private parseTotal(v: unknown): number {
     try {
       if (v === null || v === undefined) return 0;
       // If it's an object with a numeric property like { total: 19 } or {value:19}
       if (typeof v === 'object') {
+        const obj = v as Record<string, unknown>;
         const candidates = ['total', 'value', 'amount', 'sum'];
         for (const k of candidates) {
-          if (v[k] !== undefined && v[k] !== null) return Number(v[k]) || 0;
+          const val = obj[k];
+          if (val !== undefined && val !== null) return Number(val as any) || 0;
         }
         // fallback: try first value
-        const vals = Object.values(v);
-        if (vals.length) return Number(vals[0]) || 0;
+        const vals = Object.values(obj);
+        if (vals.length) return Number(vals[0] as any) || 0;
         return 0;
       }
       // primitive -> coerce to number
-      const n = Number(v);
+      const n = Number(v as any);
       return isFinite(n) ? n : 0;
     } catch {
       return 0;
@@ -177,13 +254,14 @@ export class BasketComponent implements OnInit {
 
   constructor(private cart: BasketService, public auth: AuthStateService, private snack: MatSnackBar, private router: Router, private transloco: TranslocoService) {}
 
-  imageFor(article: any): string | undefined {
+  imageFor(article?: apiClient.apiClient.Article | apiClient.apiClient.ArticleDto): string | undefined {
     if (!article) return undefined;
-    const imgs = (article as any).images as Array<any> | undefined;
-    if (!imgs || imgs.length === 0) return undefined;
-    const primary = imgs.find(i => i && i.isPrimary);
-    if (primary && primary.url) return primary.url;
-    if (imgs[0] && imgs[0].url) return imgs[0].url;
+    const imgs = article.images || article['images'];
+    if (!imgs || !Array.isArray(imgs) || imgs.length === 0) return undefined;
+    const primary = imgs.find(i => i && (i as any).isPrimary === true);
+    if (primary && (primary as any).url) return (primary as any).url as string;
+    const first = imgs[0];
+    if (first && (first as any).url) return (first as any).url as string;
     return undefined;
   }
 
@@ -196,10 +274,10 @@ export class BasketComponent implements OnInit {
   load() {
     this.loading.set(true);
     this.cart.getBasket().subscribe({
-      next: (b: any) => {
-        console.log('Basket response:', b);
-        const arr = Array.isArray(b?.items) ? b.items : Array.isArray(b) ? b : [];
-        this.items.set(arr);
+      next: (b: apiClient.apiClient.BasketDto) => {
+        // Use the items array as returned by the service directly.
+        const arr = Array.isArray(b?.items) ? b.items! : [];
+        this.items.set(arr as apiClient.apiClient.BasketItemDto[]);
         // fetch backend total
   this.cart.getTotal().subscribe({ next: t => { this.backendTotal.set(this.parseTotal(t)); this.loading.set(false); }, error: () => { this.backendTotal.set(0); this.loading.set(false); } });
       },
@@ -212,7 +290,7 @@ export class BasketComponent implements OnInit {
   }
 
   remove(itemId: number | undefined) {
-    if (!itemId) return;
+    if (itemId === undefined || itemId === null) return;
     this.cart.removeItem(itemId).subscribe({ next: () => {
       this.transloco.selectTranslate('app.delete_success').pipe(take(1)).subscribe(msg => { this.snack.open(msg, 'OK', { duration: 2000 }); });
       this.load();
@@ -236,33 +314,54 @@ export class BasketComponent implements OnInit {
     }
   }
 
-  increment(item: any) {
+  increment(item: apiClient.apiClient.BasketItemDto) {
     try {
       // if article has stock info, prevent increasing beyond stock
-      const stock = item.article?.stock;
-      const currentQty = item.quantity || item.qty || 1;
+  const stock = (item.article as any)?.stock as number | undefined;
+  const currentQty = (item.quantity ?? 1) as number;
       if (typeof stock === 'number' && currentQty >= stock) {
         // show out of stock message
         this.transloco.selectTranslate('app.out_of_stock').pipe(take(1)).subscribe(msg => { this.snack.open(msg, 'OK', { duration: 2500 }); });
         return;
       }
-      this.cart.addItem(item.article?.id || item.articleId || item.id, 1).subscribe({ next: () => { this.load(); this.cart.getTotal().subscribe({ next: t => this.backendTotal.set(this.parseTotal(t)), error: () => this.backendTotal.set(0) }); }, error: (e) => { console.error('increment failed', e); this.transloco.selectTranslate('app.add_failed').pipe(take(1)).subscribe(msg => { this.snack.open(msg, 'OK', { duration: 2500 }); }); } });
+      const articleId = (item.article?.id ?? item.articleId ?? item.id) as number | undefined;
+      if (!articleId) {
+        this.transloco.selectTranslate('app.add_failed').pipe(take(1)).subscribe(msg => { this.snack.open(msg, 'OK', { duration: 2500 }); });
+        return;
+      }
+      this.modifyItemQuantity(articleId, 1);
     } catch (err) {
       console.error('increment error', err);
     }
   }
 
-  decrement(item: any) {
+  decrement(item: apiClient.apiClient.BasketItemDto) {
     try {
-      if ((item.quantity || item.qty || 1) <= 1) {
-        this.remove(item.id || item.itemId);
+      const currentQty = (item.quantity ?? 1) as number;
+      if (currentQty <= 1) {
+        const idToRemove = item.id;
+        this.remove(idToRemove);
         return;
       }
       // try to call addItem with -1; backend may or may not support negative quantities
-  this.cart.addItem(item.article?.id || item.articleId || item.id, -1).subscribe({ next: () => { this.load(); this.cart.getTotal().subscribe({ next: t => this.backendTotal.set(typeof t === 'number' ? t : 0), error: () => this.backendTotal.set(0) }); }, error: (e) => { console.error('decrement failed', e); this.load(); } });
+      const articleId = (item.article?.id ?? item.articleId ?? item.id) as number | undefined;
+      if (!articleId) { this.load(); return; }
+      this.modifyItemQuantity(articleId, -1);
     } catch (err) {
       console.error('decrement error', err);
     }
+  }
+
+  private modifyItemQuantity(articleId: number, delta: number) {
+    this.cart.addItem(articleId, delta).subscribe({ next: () => {
+      this.load();
+      this.cart.getTotal().subscribe({ next: t => this.backendTotal.set(this.parseTotal(t)), error: () => this.backendTotal.set(0) });
+    }, error: (e) => {
+      console.error('modifyItemQuantity failed', e);
+      // show a generic add/remove failed message
+      this.transloco.selectTranslate(delta > 0 ? 'app.add_failed' : 'app.delete_failed').pipe(take(1)).subscribe(msg => { this.snack.open(msg, 'OK', { duration: 2500 }); });
+      this.load();
+    } });
   }
 
   async clear() {
@@ -270,7 +369,10 @@ export class BasketComponent implements OnInit {
       const items = this.items();
       for (const it of items) {
         // best-effort remove sequentially
-        await new Promise<void>((res) => this.cart.removeItem(it.id || it.itemId).subscribe({ next: () => res(), error: () => res() }));
+        const id = it.id;
+        if (id !== undefined && id !== null) {
+          await new Promise<void>((res) => this.cart.removeItem(id).subscribe({ next: () => res(), error: () => res() }));
+        }
       }
   this.transloco.selectTranslate('app.basket_cleared').pipe(take(1)).subscribe(msg => { this.snack.open(msg, 'OK', { duration: 2000 }); });
   this.load();
@@ -279,5 +381,18 @@ export class BasketComponent implements OnInit {
       console.error('clear failed', err);
   this.transloco.selectTranslate('app.basket_clear_failed').pipe(take(1)).subscribe(msg => { this.snack.open(msg, 'OK', { duration: 3000 }); });
     }
+  }
+
+  // Helpers to avoid undefined errors in templates
+  unitPriceOf(item: apiClient.apiClient.BasketItemDto): number {
+    return Number(item.article?.price ?? 0) || 0;
+  }
+
+  quantityOf(item: apiClient.apiClient.BasketItemDto): number {
+    return Number(item.quantity ?? 1) || 1;
+  }
+
+  linePriceOf(item: apiClient.apiClient.BasketItemDto): number {
+    return this.unitPriceOf(item) * this.quantityOf(item);
   }
 }

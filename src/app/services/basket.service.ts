@@ -12,14 +12,19 @@ export class BasketService {
     this.client = new apiClient.apiClient.ApiClient(environment.apiBaseUrl, sharedAxiosInstance);
   }
 
-  /** Get current user's basket by calling the Basket endpoint directly and returning response.data */
-  getBasket(): Observable<any> {
-    return from(sharedAxiosInstance.get(environment.apiBaseUrl + '/api/Basket/me').then(r => r.data));
+  /**
+   * Get current user's basket using the generated ApiClient so we preserve typed DTOs.
+   * Returns an Observable of BasketDto (may contain items array).
+   */
+  getBasket(): Observable<apiClient.apiClient.BasketDto> {
+    return from(this.client.me());
   }
 
-  /** Get current basket total from backend */
+  /** Get current basket total from backend (untyped response kept as number/any) */
   getTotal(): Observable<number> {
-    return from(sharedAxiosInstance.get(environment.apiBaseUrl + '/api/Basket/me/total').then(r => r.data));
+    // The generated client has a `total` endpoint, but its generated signature may vary.
+    // Keep the existing axios call for the total to avoid generator mismatch, but type the result.
+    return from(sharedAxiosInstance.get(environment.apiBaseUrl + '/api/Basket/me/total').then(r => r.data as number));
   }
 
   addItem(articleId: number, quantity = 1): Observable<void> {
