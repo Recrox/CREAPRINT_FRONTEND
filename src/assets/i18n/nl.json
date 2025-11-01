@@ -16,6 +16,10 @@
     "add_failed": "Toevoegen mislukt"
     ,"in_stock": "Op voorraad: {{count}}"
     ,"out_of_stock": "Uitverkocht"
+    ,"delete_success": "Item verwijderd"
+    ,"delete_failed": "Verwijderen mislukt"
+    ,"basket_cleared": "Winkelwagen geleegd"
+    ,"basket_clear_failed": "Winkelwagen niet geleegd"
   },
   "about": {
     "title": "Over",

@@ -16,6 +16,10 @@
     "add_failed": "Impossible d'ajouter au panier",
     "in_stock": "En stock : {{count}}",
     "out_of_stock": "Rupture de stock"
+    ,"delete_success": "Article supprimé"
+    ,"delete_failed": "Impossible de supprimer l'article"
+    ,"basket_cleared": "Panier vidé"
+    ,"basket_clear_failed": "Impossible de vider le panier"
   },
   "about": {
     "title": "À propos",

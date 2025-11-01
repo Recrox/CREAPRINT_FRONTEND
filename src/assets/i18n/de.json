@@ -16,6 +16,10 @@
     "add_failed": "Hinzufügen fehlgeschlagen"
     ,"in_stock": "Auf Lager: {{count}}"
     ,"out_of_stock": "Ausverkauft"
+    ,"delete_success": "Eintrag entfernt"
+    ,"delete_failed": "Löschen fehlgeschlagen"
+    ,"basket_cleared": "Warenkorb geleert"
+    ,"basket_clear_failed": "Konnte Warenkorb nicht leeren"
   },
   "about": {
     "title": "Über",
