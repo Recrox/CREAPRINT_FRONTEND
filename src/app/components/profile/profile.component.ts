@@ -6,6 +6,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
+import { NavService } from '../../services/nav.service';
 import { TranslocoService, TranslocoModule } from '@ngneat/transloco';
 import { AuthStateService } from '../../services/auth-state.service';
 import * as apiClient from '../../api-client';
@@ -140,7 +141,7 @@ export class ProfileComponent implements OnInit {
   // show/hide password hash
   showPassword = ngSignal(false);
 
-  constructor(public auth: AuthStateService, private router: Router) {}
+  constructor(public auth: AuthStateService, private router: Router, private nav: NavService) {}
 
   ngOnInit(): void {
     this.fetchUser();
@@ -249,12 +250,12 @@ export class ProfileComponent implements OnInit {
   }
 
   go(path: string) {
-    this.router.navigate([path]);
+    this.nav.navigateTo(this.router, path);
   }
 
   logout() {
     this.auth.setLoggedIn(false);
     TokenService.setToken(null);
-    this.router.navigate(['/']);
+    this.nav.navigateTo(this.router, '/');
   }
 }

@@ -54,9 +54,7 @@ export class UserMenuComponent {
   constructor(public auth: AuthStateService, private router: Router, public transloco: TranslocoService, private nav: NavService) {}
 
   goTo(path: string) {
-    const normalized = path.startsWith('/') ? path.slice(1) : path;
-    const parts = normalized ? normalized.split('/') : [];
-    this.nav.navigate(this.router, ...parts);
+    this.nav.navigateTo(this.router, path);
   }
 
   logout() {

@@ -23,4 +23,13 @@ export class NavService {
   navigate(router: Router, ...parts: string[]) {
     return router.navigate(this.route(...parts));
   }
+
+  // convenience: accept a path string (absolute or relative) and navigate to it
+  // normalizes leading slash and splits into parts before delegating to navigate()
+  navigateTo(router: Router, path?: string) {
+    if (!path) return this.navigate(router);
+    const normalized = path.startsWith('/') ? path.slice(1) : path;
+    const parts = normalized ? normalized.split('/').filter(p => !!p) : [];
+    return this.navigate(router, ...parts);
+  }
 }
