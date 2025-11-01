@@ -4,10 +4,11 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { UserMenuComponent } from './user-menu.component';
 import { ThemeService } from '../services/theme.service';
 import { TranslocoService } from '@ngneat/transloco';
+import { NavService } from '../services/nav.service';
 
 @Component({
   selector: 'app-header',
@@ -15,7 +16,7 @@ import { TranslocoService } from '@ngneat/transloco';
   imports: [CommonModule, MatToolbarModule, MatButtonModule, MatIconModule, MatSelectModule, RouterLink, RouterLinkActive, UserMenuComponent],
   template: `
     <mat-toolbar color="primary" class="header-toolbar">
-      <a class="logo" routerLink="/" aria-label="Accueil">
+  <a class="logo" [routerLink]="['/', transloco.getActiveLang() || 'fr']" aria-label="Accueil">
         <svg class="logo-ico" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <rect width="24" height="24" rx="4" fill="#fff" fill-opacity="0.06"></rect>
           <path d="M6 8 L11 13 L6 18 L2 14 L6 8 Z" fill="#fff" opacity="0.95" />
@@ -25,10 +26,10 @@ import { TranslocoService } from '@ngneat/transloco';
       </a>
       <span class="spacer"></span>
       <nav>
-        <button mat-button routerLink="/" routerLinkActive="active">Accueil</button>
-        <button mat-button routerLink="/articles" routerLinkActive="active">Articles</button>
-        <button mat-button routerLink="/about" routerLinkActive="active">À propos</button>
-        <button mat-button routerLink="/contact" routerLinkActive="active">Contact</button>
+  <button mat-button [routerLink]="['/', transloco.getActiveLang() || 'fr']" routerLinkActive="active">Accueil</button>
+  <button mat-button [routerLink]="['/', transloco.getActiveLang() || 'fr', 'articles']" routerLinkActive="active">Articles</button>
+  <button mat-button [routerLink]="['/', transloco.getActiveLang() || 'fr', 'about']" routerLinkActive="active">À propos</button>
+  <button mat-button [routerLink]="['/', transloco.getActiveLang() || 'fr', 'contact']" routerLinkActive="active">Contact</button>
       </nav>
       <mat-form-field appearance="outline" class="lang-select" style="margin-left:8px;">
         <mat-select [value]="transloco.getActiveLang()" (selectionChange)="changeLang($event.value)">
@@ -115,10 +116,17 @@ import { TranslocoService } from '@ngneat/transloco';
   `]
 })
 export class HeaderComponent {
-  constructor(public theme: ThemeService, public transloco: TranslocoService) {}
+  constructor(public theme: ThemeService, public transloco: TranslocoService, private router: Router, private nav: NavService) {}
 
   changeLang(lang: string) {
     this.transloco.setActiveLang(lang);
     try { localStorage.setItem('lang', lang); } catch (e) { /* ignore */ }
+    // Build the current path without the leading lang and navigate to same path under new lang
+    const urlTree = this.router.parseUrl(this.router.url);
+    const segments = urlTree.root.children['primary']?.segments.map(s => s.path) || [];
+    // drop leading lang if present
+    const known = ['fr','en','de','nl'];
+    if (segments.length && known.includes(segments[0])) segments.shift();
+    this.router.navigate(this.nav.route(...segments), { queryParams: urlTree.queryParams });
   }
 }

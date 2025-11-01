@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { TranslocoService } from '@ngneat/transloco';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,8 +16,8 @@ import { MatIconModule } from '@angular/material/icon';
         <h1>CreaPrint</h1>
         <p class="lead">Imprimez vos idées. Publiez et gérez vos articles en quelques clics.</p>
         <div class="hero-ctas">
-          <a mat-flat-button color="primary" routerLink="/articles">Voir les articles</a>
-          <a mat-stroked-button color="primary" routerLink="/articles/new">Créer un article</a>
+          <a mat-flat-button color="primary" [routerLink]="['/', transloco.getActiveLang() || 'fr', 'articles']">Voir les articles</a>
+          <a mat-stroked-button color="primary" [routerLink]="['/', transloco.getActiveLang() || 'fr', 'articles', 'new']">Créer un article</a>
         </div>
       </div>
     </section>
@@ -45,7 +46,7 @@ import { MatIconModule } from '@angular/material/icon';
         <mat-card-content>
           <p>Consultez la liste complète des articles et découvrez-en quelques-uns.</p>
           <div class="preview-actions">
-            <a mat-button routerLink="/articles">Voir tous les articles</a>
+            <a mat-button [routerLink]="['/', transloco.getActiveLang() || 'fr', 'articles']">Voir tous les articles</a>
           </div>
         </mat-card-content>
       </mat-card>
@@ -75,4 +76,4 @@ import { MatIconModule } from '@angular/material/icon';
     }
   `]
 })
-export class HomeComponent {}
+export class HomeComponent { constructor(public transloco: TranslocoService) {} }

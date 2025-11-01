@@ -2,6 +2,7 @@ import { Component, Input, Signal, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { Router } from '@angular/router';
+import { TranslocoService } from '@ngneat/transloco';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import * as apiClient from '../../api-client';
@@ -60,7 +61,7 @@ export class ArticleGridComponent {
   @Input() articles: apiClient.apiClient.Article[] | Signal<apiClient.apiClient.Article[]> = [];
   @Output() deleteArticle = new EventEmitter<number>();
 
-  constructor(private cart: BasketService, private router: Router) {}
+  constructor(private cart: BasketService, private router: Router, public transloco: TranslocoService) {}
 
   addToCart(article: apiClient.apiClient.Article, event?: Event) {
     if (event) event.stopPropagation();
@@ -76,7 +77,7 @@ export class ArticleGridComponent {
 
   goTo(article: apiClient.apiClient.Article) {
     if (!article?.id) return;
-    this.router.navigate(['/articles', article.id]);
+    this.router.navigate(['/', this.transloco.getActiveLang() || 'fr', 'articles', article.id]);
   }
 
   get articlesList(): apiClient.apiClient.Article[] {

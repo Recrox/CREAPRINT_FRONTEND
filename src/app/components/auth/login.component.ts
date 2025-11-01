@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router, RouterModule } from '@angular/router';
+import { TranslocoService } from '@ngneat/transloco';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -44,8 +45,8 @@ import { AuthService } from '../../services/auth.service';
 
           <div *ngIf="errorMessage()" style="color:#b00020;margin-top:1rem;">{{ errorMessage() }}</div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1rem;gap:8px;">
-            <a routerLink="/forgot-password" style="font-size:0.9rem;color:var(--primary);text-decoration:underline;">Mot de passe oublié ?</a>
-            <a routerLink="/signup" style="font-size:0.9rem;color:var(--primary);text-decoration:underline;">S'inscrire</a>
+            <a [routerLink]="['/', transloco.getActiveLang() || 'fr', 'forgot-password']" style="font-size:0.9rem;color:var(--primary);text-decoration:underline;">Mot de passe oublié ?</a>
+            <a [routerLink]="['/', transloco.getActiveLang() || 'fr', 'signup']" style="font-size:0.9rem;color:var(--primary);text-decoration:underline;">S'inscrire</a>
           </div>
         </form>
       </mat-card-content>
@@ -60,7 +61,7 @@ export class LoginComponent {
   errorMessage = signal('');
   showPassword = signal(false);
 
-  constructor(private fb: FormBuilder, private auth: AuthService, private router: Router) {
+  constructor(private fb: FormBuilder, private auth: AuthService, private router: Router, public transloco: TranslocoService) {
     this.form = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required]
@@ -75,7 +76,7 @@ export class LoginComponent {
     this.auth.login(v.username, v.password).subscribe({
       next: () => {
         this.loading.set(false);
-        this.router.navigate(['/']);
+  this.router.navigate(['/', this.transloco.getActiveLang() || 'fr']);
       },
       error: (err: any) => {
         this.loading.set(false);

@@ -105,11 +105,11 @@ export class EditArticleComponent {
         content: fv.content ?? '',
         price: Number(fv.price ?? 0)
       });
-      this.articleService.updateArticle(this.currentArticle.id, updated).subscribe({
+  this.articleService.updateArticle(this.currentArticle.id, updated).subscribe({
         next: () => {
           this.saving.set(false);
           this.snackBar.open('Article mis à jour', 'OK', { duration: 2000 });
-          this.router.navigate(['/articles', this.currentArticle!.id]);
+          this.router.navigate(['/', this.route.snapshot.paramMap.get('lang') || 'fr', 'articles', this.currentArticle!.id]);
         },
         error: () => { this.saving.set(false); this.snackBar.open('Erreur lors de la mise à jour', 'OK', { duration: 3000 }); }
       });
@@ -125,10 +125,10 @@ export class EditArticleComponent {
         next: a => {
           this.saving.set(false);
           this.snackBar.open('Article créé', 'OK', { duration: 2000 });
-          if (a && (a as any).id) {
-            this.router.navigate(['/articles', (a as any).id]);
+            if (a && (a as any).id) {
+            this.router.navigate(['/', this.route.snapshot.paramMap.get('lang') || 'fr', 'articles', (a as any).id]);
           } else {
-            this.router.navigate(['/articles']);
+            this.router.navigate(['/', this.route.snapshot.paramMap.get('lang') || 'fr', 'articles']);
           }
         },
         error: () => { this.saving.set(false); this.snackBar.open('Erreur lors de la création', 'OK', { duration: 3000 }); }
@@ -136,6 +136,6 @@ export class EditArticleComponent {
     }
   }
 
-  cancel() { const id = this.currentArticle?.id; if (id) this.router.navigate(['/articles', id]); else this.router.navigate(['/articles']); }
+  cancel() { const id = this.currentArticle?.id; const lang = this.route.snapshot.paramMap.get('lang') || 'fr'; if (id) this.router.navigate(['/', lang, 'articles', id]); else this.router.navigate(['/', lang, 'articles']); }
 }
 

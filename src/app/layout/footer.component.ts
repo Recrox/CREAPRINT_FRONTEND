@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { TranslocoService } from '@ngneat/transloco';
+import { NavService } from '../services/nav.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -26,10 +28,10 @@ import { MatInputModule } from '@angular/material/input';
         <div class="col links">
           <h4>Liens utiles</h4>
           <ul>
-            <li><a routerLink="/">Accueil</a></li>
-            <li><a routerLink="/articles">Articles</a></li>
-            <li><a routerLink="/contact">Contact</a></li>
-            <li><a routerLink="/profile">Mon compte</a></li>
+            <li><a [routerLink]="nav.route()">Accueil</a></li>
+            <li><a [routerLink]="nav.route('articles')">Articles</a></li>
+            <li><a [routerLink]="nav.route('contact')">Contact</a></li>
+            <li><a [routerLink]="nav.route('profile')">Mon compte</a></li>
           </ul>
         </div>
 
@@ -79,4 +81,5 @@ import { MatInputModule } from '@angular/material/input';
 })
 export class FooterComponent {
   currentYear = new Date().getFullYear();
+  constructor(public transloco: TranslocoService, public nav: NavService) {}
 }

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import { Router } from '@angular/router';
+import { TranslocoService } from '@ngneat/transloco';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { BasketService } from '../../services/basket.service';
@@ -66,7 +67,7 @@ export class ArticleTableComponent {
   @Output() deleteArticle = new EventEmitter<number>();
   displayedColumns: string[] = ['id', 'title', 'content', 'category', 'price', 'actions'];
 
-  constructor(private cart: BasketService, private router: Router) {}
+  constructor(private cart: BasketService, private router: Router, public transloco: TranslocoService) {}
 
   addToCart(article: apiClient.apiClient.Article, event?: Event) {
     if (event) event.stopPropagation();
@@ -82,7 +83,7 @@ export class ArticleTableComponent {
 
   goTo(article: apiClient.apiClient.Article) {
     if (!article?.id) return;
-    this.router.navigate(['/articles', article.id]);
+    this.router.navigate(['/', this.transloco.getActiveLang() || 'fr', 'articles', article.id]);
   }
 
   get articlesList(): apiClient.apiClient.Article[] {

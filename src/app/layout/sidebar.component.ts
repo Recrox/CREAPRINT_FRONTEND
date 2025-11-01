@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { TranslocoService } from '@ngneat/transloco';
+import { NavService } from '../services/nav.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -12,10 +14,10 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
     <mat-sidenav-container class="sidebar-container">
       <mat-sidenav mode="side" opened class="sidebar">
         <mat-nav-list>
-          <a mat-list-item routerLink="/" routerLinkActive="active">Accueil</a>
-          <a mat-list-item routerLink="/articles" routerLinkActive="active">Articles</a>
-          <a mat-list-item routerLink="/about" routerLinkActive="active">À propos</a>
-          <a mat-list-item routerLink="/contact" routerLinkActive="active">Contact</a>
+          <a mat-list-item [routerLink]="nav.route()" routerLinkActive="active">Accueil</a>
+          <a mat-list-item [routerLink]="nav.route('articles')" routerLinkActive="active">Articles</a>
+          <a mat-list-item [routerLink]="nav.route('about')" routerLinkActive="active">À propos</a>
+          <a mat-list-item [routerLink]="nav.route('contact')" routerLinkActive="active">Contact</a>
         </mat-nav-list>
       </mat-sidenav>
       <mat-sidenav-content>
@@ -72,4 +74,6 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
     }
   `]
 })
-export class SidebarComponent {}
+export class SidebarComponent {
+  constructor(public transloco: TranslocoService, public nav: NavService) {}
+}

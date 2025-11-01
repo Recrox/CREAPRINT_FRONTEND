@@ -17,6 +17,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog.component';
 import { RouterLink } from '@angular/router';
+import { TranslocoService } from '@ngneat/transloco';
+import { NavService } from '../../services/nav.service';
 
 import { signal } from '@angular/core';
 import { ArticleService } from '../../services/article.service';
@@ -31,8 +33,8 @@ import * as apiClient from '../../api-client';
   <mat-card style="width:100%;max-width:none;margin-bottom:3rem;padding:2rem;">
     <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
       <mat-card-title style="font-size:1.5rem;font-weight:600;letter-spacing:0.4px;">Liste des articles</mat-card-title>
-      <span style="flex:1 1 auto"></span>
-      <button mat-flat-button color="primary" routerLink="/articles/new"><mat-icon>add</mat-icon>&nbsp;Créer un article</button>
+    <span style="flex:1 1 auto"></span>
+  <button mat-flat-button color="primary" [routerLink]="nav.route('articles','new')"><mat-icon>add</mat-icon>&nbsp;Créer un article</button>
     </div>
     <mat-card-content>
       <app-article-list-toolbar (search)="onSearch($event)" [isGridMode]="isGridMode"></app-article-list-toolbar>
@@ -81,7 +83,7 @@ export class ArticleListComponent implements OnInit {
   pagedArticles = signal<apiClient.apiClient.Article[]>([]);
   total = signal(0);
 
-  constructor(private articleService: ArticleService, private cdr: ChangeDetectorRef, private router: Router, private snackBar: MatSnackBar, private dialog: MatDialog) {}
+  constructor(private articleService: ArticleService, private cdr: ChangeDetectorRef, private router: Router, private snackBar: MatSnackBar, private dialog: MatDialog, public transloco: TranslocoService, public nav: NavService) {}
 
   confirmAndDelete(id: number) {
     if (!id) return;
@@ -102,7 +104,7 @@ export class ArticleListComponent implements OnInit {
         const sel = this.selectedArticle();
         if (sel && sel.id === id) {
           this.selectedArticle.set(undefined);
-          this.router.navigate(['/articles']);
+          this.nav.navigate(this.router,'articles');
         }
         // refresh current page
         this.fetchPage();
@@ -187,6 +189,6 @@ export class ArticleListComponent implements OnInit {
 
   selectArticle(article: apiClient.apiClient.Article) {
     // Navigate to detail route
-    this.router.navigate(['/articles', article.id]);
+    this.router.navigate(['/', this.transloco.getActiveLang() || 'fr', 'articles', article.id]);
   }
 }

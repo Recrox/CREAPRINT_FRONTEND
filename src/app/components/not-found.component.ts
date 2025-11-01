@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { TranslocoService } from '@ngneat/transloco';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -16,8 +17,8 @@ import { MatIconModule } from '@angular/material/icon';
           <h2>Oups — page introuvable</h2>
           <p>La page que vous cherchez n'existe pas ou a été déplacée. Vérifiez l'URL ou revenez à l'accueil.</p>
           <div class="actions">
-            <a mat-stroked-button class="btn" routerLink="/">Retour à l'accueil</a>
-            <a mat-flat-button class="btn primary" color="primary" routerLink="/articles">Voir les articles</a>
+            <a mat-stroked-button class="btn" [routerLink]="['/', transloco.getActiveLang() || 'fr']">Retour à l'accueil</a>
+            <a mat-flat-button class="btn primary" color="primary" [routerLink]="['/', transloco.getActiveLang() || 'fr', 'articles']">Voir les articles</a>
           </div>
         </div>
       </div>
@@ -40,4 +41,4 @@ import { MatIconModule } from '@angular/material/icon';
     `
   ]
 })
-export class NotFoundComponent {}
+export class NotFoundComponent { constructor(public transloco: TranslocoService) {} }

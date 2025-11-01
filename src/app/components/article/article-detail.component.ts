@@ -127,7 +127,8 @@ export class ArticleDetailComponent {
   edit() {
     const a = this.articleSignal();
     if (!a || !a.id) return;
-    this.router.navigate(['/articles', a.id, 'edit']);
+    const lang = this.route.snapshot.paramMap.get('lang') || 'fr';
+    this.router.navigate(['/', lang, 'articles', a.id, 'edit']);
   }
 
   deleteCurrent() {
@@ -141,7 +142,8 @@ export class ArticleDetailComponent {
           this.articleService.deleteArticle(a.id!).subscribe({
           next: () => {
             this.snackBar.open('Article supprimé', undefined, { duration: 3000 });
-            this.router.navigate(['/articles']);
+            const lang = this.route.snapshot.paramMap.get('lang') || 'fr';
+            this.router.navigate(['/', lang, 'articles']);
           },
           error: () => {
             this.snackBar.open('Impossible de supprimer l\'article', undefined, { duration: 3000 });

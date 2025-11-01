@@ -5,6 +5,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { Router } from '@angular/router';
+import { TranslocoService } from '@ngneat/transloco';
+import { NavService } from '../services/nav.service';
 import { AuthStateService } from '../services/auth-state.service';
 
 @Component({
@@ -49,14 +51,16 @@ import { AuthStateService } from '../services/auth-state.service';
   `
 })
 export class UserMenuComponent {
-  constructor(public auth: AuthStateService, private router: Router) {}
+  constructor(public auth: AuthStateService, private router: Router, public transloco: TranslocoService, private nav: NavService) {}
 
   goTo(path: string) {
-    this.router.navigate([path]);
+    const normalized = path.startsWith('/') ? path.slice(1) : path;
+    const parts = normalized ? normalized.split('/') : [];
+    this.nav.navigate(this.router, ...parts);
   }
 
   logout() {
     this.auth.setLoggedIn(false);
-    this.router.navigate(['/']);
+    this.nav.navigate(this.router);
   }
 }

@@ -1,5 +1,5 @@
 import { Component, signal, OnInit } from '@angular/core';
-import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { RouterOutlet, Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 // import { HomeComponent } from './components/home.component';
 import { HeaderComponent } from './layout/header.component';
@@ -22,20 +22,33 @@ export class App implements OnInit {
   // show dev cookie manager when not in production, or when URL has ?devCookies=1
   protected readonly showDevCookie = !environment.production || new URL(window.location.href).searchParams.has('devCookies');
 
-  constructor(private router: Router, private auth: AuthService, private authState: AuthStateService, private transloco: TranslocoService) {}
+  constructor(private router: Router, private auth: AuthService, private authState: AuthStateService, private transloco: TranslocoService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     // restore auth state from token or server session, then enable debug auto-login
     this.auth.checkAuth().then(() => {
-      // set persisted language or fall back to browser language
-      const saved = (() => { try { return localStorage.getItem('lang'); } catch (e) { return null; } })();
-      if (saved) {
-        this.transloco.setActiveLang(saved);
-      } else {
-        const nav = navigator.language?.split('-')[0] || 'fr';
-        const pick = ['fr','en','de','nl'].includes(nav) ? nav : 'fr';
-        this.transloco.setActiveLang(pick);
-      }
+      // prefer language from route param (:lang), fall back to persisted or browser language
+      this.router.events.subscribe(e => {
+        if (e instanceof NavigationEnd) {
+          const root = this.router.routerState.snapshot.root;
+          // find deepest child route
+          let child = root;
+          while (child.firstChild) { child = child.firstChild; }
+          const lang = child.paramMap?.get('lang');
+          if (lang && ['fr','en','de','nl'].includes(lang)) {
+            this.transloco.setActiveLang(lang);
+            try { localStorage.setItem('lang', lang); } catch (err) {}
+          } else {
+            const saved = (() => { try { return localStorage.getItem('lang'); } catch (e) { return null; } })();
+            if (saved) this.transloco.setActiveLang(saved);
+            else {
+              const nav = navigator.language?.split('-')[0] || 'fr';
+              const pick = ['fr','en','de','nl'].includes(nav) ? nav : 'fr';
+              this.transloco.setActiveLang(pick);
+            }
+          }
+        }
+      });
       this.connectAdminInDebug();
     });
   }
