@@ -27,7 +27,7 @@ import { ConfirmDialogComponent } from '../shared/confirm-dialog.component';
 
       <mat-card *ngIf="!loading() && article()" class="detail-card">
         <div class="media">
-          <img class="media-img" src="https://placehold.co/640x360?text=Article+Image" alt="Image de l'article" />
+          <img class="media-img" [src]="imageFor(article()) || 'https://placehold.co/640x360?text=Article+Image'" [alt]="article()?.title || 'Article image'" />
         </div>
         <div class="content">
           <div class="header">
@@ -179,6 +179,16 @@ export class ArticleDetailComponent {
         });
       }
     });
+  }
+
+  imageFor(article: apiClient.apiClient.Article | undefined): string | undefined {
+    if (!article) return undefined;
+    const imgs = (article as any).images as Array<any> | undefined;
+    if (!imgs || imgs.length === 0) return undefined;
+    const primary = imgs.find(i => i && i.isPrimary);
+    if (primary && primary.url) return primary.url;
+    if (imgs[0] && imgs[0].url) return imgs[0].url;
+    return undefined;
   }
 
   private snackBarMessage(title: string) {

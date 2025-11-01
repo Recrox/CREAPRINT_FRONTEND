@@ -1604,6 +1604,7 @@ export class Article implements IArticle {
     categoryId?: number | undefined;
     category?: Category;
     stock?: number;
+    images?: ArticleImage[] | undefined;
 
     constructor(data?: IArticle) {
         if (data) {
@@ -1627,6 +1628,11 @@ export class Article implements IArticle {
             this.categoryId = _data["categoryId"];
             this.category = _data["category"] ? Category.fromJS(_data["category"]) : undefined as any;
             this.stock = _data["stock"];
+            if (Array.isArray(_data["images"])) {
+                this.images = [] as any;
+                for (let item of _data["images"])
+                    this.images!.push(ArticleImage.fromJS(item));
+            }
         }
     }
 
@@ -1650,6 +1656,11 @@ export class Article implements IArticle {
         data["categoryId"] = this.categoryId;
         data["category"] = this.category ? this.category.toJSON() : undefined as any;
         data["stock"] = this.stock;
+        if (Array.isArray(this.images)) {
+            data["images"] = [];
+            for (let item of this.images)
+                data["images"].push(item ? item.toJSON() : undefined as any);
+        }
         return data;
     }
 }
@@ -1666,6 +1677,83 @@ export interface IArticle {
     categoryId?: number | undefined;
     category?: Category;
     stock?: number;
+    images?: ArticleImage[] | undefined;
+}
+
+export class ArticleImage implements IArticleImage {
+    id?: number;
+    createdBy?: string | undefined;
+    createdOn?: Date;
+    updatedBy?: string | undefined;
+    updatedOn?: Date | undefined;
+    articleId?: number;
+    article?: Article;
+    url?: string | undefined;
+    data?: string | undefined;
+    mimeType?: string | undefined;
+    isPrimary?: boolean;
+
+    constructor(data?: IArticleImage) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.createdBy = _data["createdBy"];
+            this.createdOn = _data["createdOn"] ? new Date(_data["createdOn"].toString()) : undefined as any;
+            this.updatedBy = _data["updatedBy"];
+            this.updatedOn = _data["updatedOn"] ? new Date(_data["updatedOn"].toString()) : undefined as any;
+            this.articleId = _data["articleId"];
+            this.article = _data["article"] ? Article.fromJS(_data["article"]) : undefined as any;
+            this.url = _data["url"];
+            this.data = _data["data"];
+            this.mimeType = _data["mimeType"];
+            this.isPrimary = _data["isPrimary"];
+        }
+    }
+
+    static fromJS(data: any): ArticleImage {
+        data = typeof data === 'object' ? data : {};
+        let result = new ArticleImage();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["createdBy"] = this.createdBy;
+        data["createdOn"] = this.createdOn ? this.createdOn.toISOString() : undefined as any;
+        data["updatedBy"] = this.updatedBy;
+        data["updatedOn"] = this.updatedOn ? this.updatedOn.toISOString() : undefined as any;
+        data["articleId"] = this.articleId;
+        data["article"] = this.article ? this.article.toJSON() : undefined as any;
+        data["url"] = this.url;
+        data["data"] = this.data;
+        data["mimeType"] = this.mimeType;
+        data["isPrimary"] = this.isPrimary;
+        return data;
+    }
+}
+
+export interface IArticleImage {
+    id?: number;
+    createdBy?: string | undefined;
+    createdOn?: Date;
+    updatedBy?: string | undefined;
+    updatedOn?: Date | undefined;
+    articleId?: number;
+    article?: Article;
+    url?: string | undefined;
+    data?: string | undefined;
+    mimeType?: string | undefined;
+    isPrimary?: boolean;
 }
 
 export class Category implements ICategory {

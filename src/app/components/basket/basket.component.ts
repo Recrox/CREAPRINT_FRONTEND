@@ -43,7 +43,7 @@ import { firstValueFrom } from 'rxjs';
           <div *ngIf="!loading() && items().length > 0" class="items">
             <div class="item-row" *ngFor="let it of items()">
               <div class="thumb">
-                <img *ngIf="it.article?.imageUrl; else placeholder" [src]="it.article.imageUrl" alt="{{ it.article?.title }}" />
+                <img *ngIf="imageFor(it.article); else placeholder" [src]="imageFor(it.article)" [alt]="it.article?.title" />
                 <ng-template #placeholder>
                   <div class="thumb-placeholder"><mat-icon>image</mat-icon></div>
                 </ng-template>
@@ -176,6 +176,16 @@ export class BasketComponent implements OnInit {
   }
 
   constructor(private cart: BasketService, public auth: AuthStateService, private snack: MatSnackBar, private router: Router, private transloco: TranslocoService) {}
+
+  imageFor(article: any): string | undefined {
+    if (!article) return undefined;
+    const imgs = (article as any).images as Array<any> | undefined;
+    if (!imgs || imgs.length === 0) return undefined;
+    const primary = imgs.find(i => i && i.isPrimary);
+    if (primary && primary.url) return primary.url;
+    if (imgs[0] && imgs[0].url) return imgs[0].url;
+    return undefined;
+  }
 
   ngOnInit(): void {
     if (this.auth.isLoggedInSignal()()) {
