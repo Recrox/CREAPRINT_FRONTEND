@@ -20,7 +20,12 @@ sharedAxiosInstance.interceptors.request.use((config) => {
 
 export class TokenService {
   static setToken(token: string | null) {
-    try { if (token) localStorage.setItem('auth_token', token); else localStorage.removeItem('auth_token'); } catch {}
+    try {
+      if (token) localStorage.setItem('auth_token', token);
+      else localStorage.removeItem('auth_token');
+      // notify app that token changed
+      try { window.dispatchEvent(new CustomEvent('auth-token-changed', { detail: { token } })); } catch {}
+    } catch {}
   }
 
   static getToken(): string | null {
@@ -28,7 +33,11 @@ export class TokenService {
   }
 
   static setRefreshToken(token: string | null) {
-    try { if (token) localStorage.setItem('refresh_token', token); else localStorage.removeItem('refresh_token'); } catch {}
+    try {
+      if (token) localStorage.setItem('refresh_token', token);
+      else localStorage.removeItem('refresh_token');
+      try { window.dispatchEvent(new CustomEvent('auth-refresh-token-changed', { detail: { token } })); } catch {}
+    } catch {}
   }
 
   static getRefreshToken(): string | null {
@@ -50,7 +59,8 @@ sharedAxiosInstance.interceptors.response.use(
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
       const refreshToken = TokenService.getRefreshToken();
       if (!refreshToken) {
-        // no refresh token -> can't refresh
+        // no refresh token -> can't refresh. Clear any stored tokens so UI knows to logout.
+        try { TokenService.setToken(null); TokenService.setRefreshToken(null); } catch {}
         return Promise.reject(error);
       }
 

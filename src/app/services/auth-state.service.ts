@@ -10,6 +10,16 @@ export class AuthStateService {
   // initialize from TokenService presence
   private _isLoggedIn = signal<boolean>(!!TokenService.getToken());
 
+  constructor() {
+    // listen for token change events (dispatched by TokenService)
+    try {
+      window.addEventListener('auth-token-changed', (e: any) => {
+        const token = e?.detail?.token;
+        this._isLoggedIn.set(!!token);
+      });
+    } catch {}
+  }
+
   isLoggedIn() {
     return this._isLoggedIn();
   }
