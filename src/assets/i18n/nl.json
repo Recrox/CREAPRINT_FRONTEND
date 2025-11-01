@@ -1,0 +1,23 @@
+{
+  "app": {
+    "title": "CreaPrint",
+    "home": "Start",
+    "articles": "Artikelen",
+    "about": "Over",
+    "contact": "Contact",
+    "add": "Toevoegen",
+    "delete": "Verwijderen",
+    "cart": "Winkelwagen",
+    "profile": "Profiel",
+    "login": "Inloggen",
+    "signup": "Registreren",
+    "forgot_password": "Wachtwoord vergeten",
+    "added_to_cart": "Toegevoegd aan winkelwagen: {{title}}",
+    "add_failed": "Toevoegen mislukt"
+  },
+  "about": {
+    "title": "Over",
+    "welcome": "Welkom bij CreaPrint! Deze app laat je toe je artikelen eenvoudig te beheren met Angular en NSwag.",
+    "stack": "Angular versie: 20<br>UI: Angular Material<br>Backend: Swagger API via NSwag"
+  }
+}

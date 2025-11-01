@@ -11,7 +11,9 @@
     "profile": "Profiel",
     "login": "Inloggen",
     "signup": "Registreren",
-    "forgot_password": "Wachtwoord vergeten"
+    "forgot_password": "Wachtwoord vergeten",
+    "added_to_cart": "Toegevoegd aan winkelwagen: {{title}}",
+    "add_failed": "Toevoegen mislukt"
   },
   "about": {
     "title": "Over",

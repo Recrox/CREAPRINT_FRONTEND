@@ -5,13 +5,14 @@ import { Router } from '@angular/router';
 import { TranslocoService } from '@ngneat/transloco';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import * as apiClient from '../../api-client';
 import { BasketService } from '../../services/basket.service';
 
 @Component({
   selector: 'app-article-grid',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule],
+  imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule, MatSnackBarModule],
   template: `
     <div class="article-grid">
       <mat-card *ngFor="let article of articlesList" class="article-card" style="cursor:pointer;" (click)="goTo(article)">
@@ -61,12 +62,21 @@ export class ArticleGridComponent {
   @Input() articles: apiClient.apiClient.Article[] | Signal<apiClient.apiClient.Article[]> = [];
   @Output() deleteArticle = new EventEmitter<number>();
 
-  constructor(private cart: BasketService, private router: Router, public transloco: TranslocoService) {}
+  constructor(private cart: BasketService, private router: Router, public transloco: TranslocoService, private snackBar: MatSnackBar) {}
 
   addToCart(article: apiClient.apiClient.Article, event?: Event) {
     if (event) event.stopPropagation();
     if (!article?.id) return;
-    this.cart.addItem(article.id, 1).subscribe({ next: () => {}, error: () => {} });
+    this.cart.addItem(article.id, 1).subscribe({
+      next: () => {
+        const msg = this.transloco.translate('app.added_to_cart', { title: article.title });
+        this.snackBar.open(msg, undefined, { duration: 2500 });
+      },
+      error: () => {
+        const msg = this.transloco.translate('app.add_failed');
+        this.snackBar.open(msg, undefined, { duration: 3000 });
+      }
+    });
   }
 
   delete(article: apiClient.apiClient.Article, event?: Event) {

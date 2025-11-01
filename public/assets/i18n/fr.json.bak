@@ -11,7 +11,9 @@
     "profile": "Profil",
     "login": "Connexion",
     "signup": "Inscription",
-    "forgot_password": "Mot de passe oublié"
+    "forgot_password": "Mot de passe oublié",
+    "added_to_cart": "Ajouté au panier : {{title}}",
+    "add_failed": "Impossible d'ajouter au panier"
   },
   "about": {
     "title": "À propos",

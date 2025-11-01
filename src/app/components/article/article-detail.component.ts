@@ -9,7 +9,8 @@ import { MatDividerModule } from '@angular/material/divider';
 import * as apiClient from '../../api-client';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ArticleService } from '../../services/article.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { TranslocoService } from '@ngneat/transloco';
 import { BasketService } from '../../services/basket.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../shared/confirm-dialog.component';
@@ -17,7 +18,7 @@ import { ConfirmDialogComponent } from '../shared/confirm-dialog.component';
 @Component({
   selector: 'app-article-detail',
   standalone: true,
-  imports: [CommonModule, MatCardModule, /* new */ MatButtonModule, MatProgressSpinnerModule, MatIconModule, MatDividerModule],
+  imports: [CommonModule, MatCardModule, /* new */ MatButtonModule, MatProgressSpinnerModule, MatIconModule, MatDividerModule, MatSnackBarModule],
   template: `
     <div class="detail-root">
       <div class="spinner" *ngIf="loading()">
@@ -102,7 +103,7 @@ export class ArticleDetailComponent {
     this.loadedFromRoute = false;
   }
 
-  constructor(private route: ActivatedRoute, private articleService: ArticleService, private router: Router, private snackBar: MatSnackBar, private dialog: MatDialog, private cart: BasketService) {}
+  constructor(private route: ActivatedRoute, private articleService: ArticleService, private router: Router, private snackBar: MatSnackBar, private dialog: MatDialog, private cart: BasketService, public transloco: TranslocoService) {}
 
   ngOnInit(): void {
     // Subscribe to route changes and fetch when an id is present if no input was provided
@@ -162,11 +163,22 @@ export class ArticleDetailComponent {
     if (!a || !a.id) return;
     this.cart.addItem(a.id, 1).subscribe({
       next: () => {
-        this.snackBar.open('Article ajouté au panier', undefined, { duration: 2500 });
+        const msg = this.snackBarMessage(a.title || '');
+        this.snackBar.open(msg, undefined, { duration: 2500 });
       },
       error: () => {
-        this.snackBar.open('Impossible d\'ajouter l\'article au panier', undefined, { duration: 3000 });
+        const msg = this.transloco.translate('app.add_failed');
+        this.snackBar.open(msg, undefined, { duration: 3000 });
       }
     });
+  }
+
+  private snackBarMessage(title: string) {
+    // Use Transloco if available
+    try {
+      return this.transloco.translate('app.added_to_cart', { title });
+    } catch (e) {
+      return `Article ajouté au panier${title ? ': ' + title : ''}`;
+    }
   }
 }

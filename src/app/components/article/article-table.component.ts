@@ -6,13 +6,14 @@ import { Router } from '@angular/router';
 import { TranslocoService } from '@ngneat/transloco';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { BasketService } from '../../services/basket.service';
 import * as apiClient from '../../api-client';
 
 @Component({
   selector: 'app-article-table',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatSortModule, MatButtonModule, MatIconModule],
+  imports: [CommonModule, MatTableModule, MatSortModule, MatButtonModule, MatIconModule, MatSnackBarModule],
   template: `
   <table mat-table [dataSource]="articlesList" matSort class="mat-elevation-z1" style="width:100%;min-width:600px;">
       <ng-container matColumnDef="id">
@@ -67,12 +68,21 @@ export class ArticleTableComponent {
   @Output() deleteArticle = new EventEmitter<number>();
   displayedColumns: string[] = ['id', 'title', 'content', 'category', 'price', 'actions'];
 
-  constructor(private cart: BasketService, private router: Router, public transloco: TranslocoService) {}
+  constructor(private cart: BasketService, private router: Router, public transloco: TranslocoService, private snackBar: MatSnackBar) {}
 
   addToCart(article: apiClient.apiClient.Article, event?: Event) {
     if (event) event.stopPropagation();
     if (!article?.id) return;
-    this.cart.addItem(article.id, 1).subscribe({ next: () => {}, error: () => {} });
+    this.cart.addItem(article.id, 1).subscribe({
+      next: () => {
+        const msg = this.transloco.translate('app.added_to_cart', { title: article.title });
+        this.snackBar.open(msg, undefined, { duration: 2500 });
+      },
+      error: () => {
+        const msg = this.transloco.translate('app.add_failed');
+        this.snackBar.open(msg, undefined, { duration: 3000 });
+      }
+    });
   }
 
   delete(article: apiClient.apiClient.Article, event?: Event) {

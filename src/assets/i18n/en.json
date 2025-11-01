@@ -1,0 +1,24 @@
+{
+  "app": {
+    "title": "CreaPrint",
+    "home": "Home",
+    "articles": "Articles",
+    "about": "About",
+    "contact": "Contact",
+    "add": "Add",
+    "delete": "Delete",
+    "cart": "Basket",
+    "profile": "Profile",
+    "login": "Login",
+    "signup": "Sign up",
+    "forgot_password": "Forgot password",
+    "added_to_cart": "Added to cart: {{title}}",
+    "add_failed": "Unable to add to cart"
+  },
+  "about": {
+    "title": "About",
+    "welcome": "Welcome to CreaPrint! This app lets you manage your articles easily with Angular and NSwag.",
+    "stack": "Angular Version: 20<br>UI: Angular Material<br>Backend: Swagger API via NSwag"
+  }
+
+}

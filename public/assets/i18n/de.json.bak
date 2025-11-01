@@ -11,7 +11,9 @@
     "profile": "Profil",
     "login": "Anmelden",
     "signup": "Registrieren",
-    "forgot_password": "Passwort vergessen"
+    "forgot_password": "Passwort vergessen",
+    "added_to_cart": "Zum Warenkorb hinzugefügt: {{title}}",
+    "add_failed": "Hinzufügen fehlgeschlagen"
   },
   "about": {
     "title": "Über",
