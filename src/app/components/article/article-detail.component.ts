@@ -193,12 +193,14 @@ export class ArticleDetailComponent {
         if (!confirmed) return;
           this.articleService.deleteArticle(a.id!).subscribe({
           next: () => {
-            this.snackBar.open('Article supprimé', undefined, { duration: 3000 });
+            const msg = this.transloco.translate('app.delete_success');
+            this.snackBar.open(msg, undefined, { duration: 3000 });
             const lang = this.route.snapshot.paramMap.get('lang') || 'fr';
             this.router.navigate(['/', lang, 'articles']);
           },
           error: () => {
-            this.snackBar.open('Impossible de supprimer l\'article', undefined, { duration: 3000 });
+            const msg = this.transloco.translate('app.delete_failed');
+            this.snackBar.open(msg, undefined, { duration: 3000 });
           }
         });
       });
@@ -218,9 +220,8 @@ export class ArticleDetailComponent {
         this.snackBar.open(msg, undefined, { duration: 2500 });
       },
       error: () => {
-        this.transloco.selectTranslate('app.add_failed').subscribe(msg => {
-          this.snackBar.open(msg, undefined, { duration: 3000 });
-        });
+        const msg = this.transloco.translate('app.add_failed');
+        this.snackBar.open(msg, undefined, { duration: 3000 });
       }
     });
   }
