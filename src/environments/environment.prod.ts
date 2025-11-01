@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://localhost:44366'
+  apiBaseUrl: 'https://api.creaprint.com'
   ,
   defaultLang: 'fr'
 };
