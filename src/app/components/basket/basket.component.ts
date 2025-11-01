@@ -336,20 +336,48 @@ export class BasketComponent implements OnInit {
   }
 
   decrement(item: apiClient.apiClient.BasketItemDto) {
-    try {
-      const currentQty = (item.quantity ?? 1) as number;
-      if (currentQty <= 1) {
-        const idToRemove = item.id;
-        this.remove(idToRemove);
-        return;
+    (async () => {
+      try {
+        const currentQty = (item.quantity ?? 1) as number;
+        const articleId = (item.article?.id ?? item.articleId ?? item.id) as number | undefined;
+        const itemId = item.id ?? item.articleId;
+        if (!articleId) { this.load(); return; }
+
+        if (currentQty <= 1) {
+          // remove the whole line
+          this.remove(itemId);
+          return;
+        }
+
+        // Backend rejects negative deltas; workaround: remove line then re-add with new quantity
+        const newQty = currentQty - 1;
+        if (itemId === undefined || itemId === null) {
+          // fallback: try to call addItem with -1 (may fail) — but we avoid sending negatives
+          console.warn('decrement: no itemId, attempting safer add/remove not possible');
+          this.load();
+          return;
+        }
+
+        try {
+          // remove existing line
+          await firstValueFrom(this.cart.removeItem(itemId));
+        } catch (e) {
+          console.warn('decrement: removeItem failed, proceeding to try add with reduced qty', e);
+        }
+
+        try {
+          // re-add with desired quantity
+          await firstValueFrom(this.cart.addItem(articleId, newQty));
+        } catch (e) {
+          console.error('decrement: failed to add item with new quantity', e);
+          this.transloco.selectTranslate('app.add_failed').pipe(take(1)).subscribe(msg => { this.snack.open(msg, 'OK', { duration: 3000 }); });
+        }
+
+        this.load();
+      } catch (err) {
+        console.error('decrement error', err);
       }
-      // try to call addItem with -1; backend may or may not support negative quantities
-      const articleId = (item.article?.id ?? item.articleId ?? item.id) as number | undefined;
-      if (!articleId) { this.load(); return; }
-      this.modifyItemQuantity(articleId, -1);
-    } catch (err) {
-      console.error('decrement error', err);
-    }
+    })();
   }
 
   private modifyItemQuantity(articleId: number, delta: number) {
