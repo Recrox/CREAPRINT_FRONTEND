@@ -6,6 +6,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { TranslocoService, TranslocoModule } from '@ngneat/transloco';
+import { take } from 'rxjs/operators';
 import { BasketService } from '../../services/basket.service';
 import { AuthStateService } from '../../services/auth-state.service';
 import { Router } from '@angular/router';
@@ -14,7 +16,7 @@ import { firstValueFrom } from 'rxjs';
 @Component({
   selector: 'app-basket',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatListModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule, MatSnackBarModule],
+  imports: [CommonModule, MatCardModule, MatListModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule, MatSnackBarModule, TranslocoModule],
   template: `
     <mat-card class="basket-card">
       <div class="card-header">
@@ -77,7 +79,7 @@ import { firstValueFrom } from 'rxjs';
 
       <div class="card-footer" *ngIf="!loading()">
         <div class="summary">
-          <div class="summary-line"><span>Sous-total</span><span class="mono">{{ total() | number:'1.2-2' }} €</span></div>
+          <div class="summary-line"><span>Sous-total</span><span class="mono">{{ backendTotal() | number:'1.2-2' }} €</span></div>
           <div class="summary-note">Taxes et livraison calculées à la commande</div>
         </div>
         <div class="actions">
@@ -148,21 +150,32 @@ import { firstValueFrom } from 'rxjs';
 export class BasketComponent implements OnInit {
   items = signal<any[]>([]);
   loading = signal(false);
-  // derive total from items so it's always accurate
-  total = computed(() => {
+  // total provided by backend API
+  backendTotal = signal<number>(0);
+
+  private parseTotal(v: any): number {
     try {
-      const arr = this.items() || [];
-      return arr.reduce((acc: number, it: any) => {
-        const price = Number(it.article?.price ?? it.price ?? it.unitPrice ?? it.amount) || 0;
-        const qty = Number(it.quantity ?? it.qty ?? 1) || 1;
-        return acc + price * qty;
-      }, 0);
+      if (v === null || v === undefined) return 0;
+      // If it's an object with a numeric property like { total: 19 } or {value:19}
+      if (typeof v === 'object') {
+        const candidates = ['total', 'value', 'amount', 'sum'];
+        for (const k of candidates) {
+          if (v[k] !== undefined && v[k] !== null) return Number(v[k]) || 0;
+        }
+        // fallback: try first value
+        const vals = Object.values(v);
+        if (vals.length) return Number(vals[0]) || 0;
+        return 0;
+      }
+      // primitive -> coerce to number
+      const n = Number(v);
+      return isFinite(n) ? n : 0;
     } catch {
       return 0;
     }
-  });
+  }
 
-  constructor(private cart: BasketService, public auth: AuthStateService, private snack: MatSnackBar, private router: Router) {}
+  constructor(private cart: BasketService, public auth: AuthStateService, private snack: MatSnackBar, private router: Router, private transloco: TranslocoService) {}
 
   ngOnInit(): void {
     if (this.auth.isLoggedInSignal()()) {
@@ -177,10 +190,12 @@ export class BasketComponent implements OnInit {
         console.log('Basket response:', b);
         const arr = Array.isArray(b?.items) ? b.items : Array.isArray(b) ? b : [];
         this.items.set(arr);
-        this.loading.set(false);
+        // fetch backend total
+  this.cart.getTotal().subscribe({ next: t => { this.backendTotal.set(this.parseTotal(t)); this.loading.set(false); }, error: () => { this.backendTotal.set(0); this.loading.set(false); } });
       },
       error: () => {
         this.items.set([]);
+        this.backendTotal.set(0);
         this.loading.set(false);
       }
     });
@@ -188,7 +203,14 @@ export class BasketComponent implements OnInit {
 
   remove(itemId: number | undefined) {
     if (!itemId) return;
-    this.cart.removeItem(itemId).subscribe({ next: () => { this.snack.open('Article supprimé', 'OK', { duration: 2000 }); this.load(); }, error: () => { this.snack.open('Erreur lors de la suppression', 'OK', { duration: 3000 }); this.load(); } });
+    this.cart.removeItem(itemId).subscribe({ next: () => {
+      this.transloco.selectTranslate('app.delete_success').pipe(take(1)).subscribe(msg => { this.snack.open(msg, 'OK', { duration: 2000 }); });
+      this.load();
+  this.cart.getTotal().subscribe({ next: t => this.backendTotal.set(this.parseTotal(t)), error: () => this.backendTotal.set(0) });
+    }, error: () => {
+      this.transloco.selectTranslate('app.delete_failed').pipe(take(1)).subscribe(msg => { this.snack.open(msg, 'OK', { duration: 3000 }); });
+      this.load();
+    } });
   }
 
   goToLogin() {
@@ -206,7 +228,7 @@ export class BasketComponent implements OnInit {
 
   increment(item: any) {
     try {
-      this.cart.addItem(item.article?.id || item.articleId || item.id, 1).subscribe({ next: () => { this.load(); }, error: (e) => { console.error('increment failed', e); this.snack.open("Impossible d'ajouter", 'OK', { duration: 2500 }); } });
+  this.cart.addItem(item.article?.id || item.articleId || item.id, 1).subscribe({ next: () => { this.load(); this.cart.getTotal().subscribe({ next: t => this.backendTotal.set(typeof t === 'number' ? t : 0), error: () => this.backendTotal.set(0) }); }, error: (e) => { console.error('increment failed', e); this.transloco.selectTranslate('app.add_failed').pipe(take(1)).subscribe(msg => { this.snack.open(msg, 'OK', { duration: 2500 }); }); } });
     } catch (err) {
       console.error('increment error', err);
     }
@@ -219,7 +241,7 @@ export class BasketComponent implements OnInit {
         return;
       }
       // try to call addItem with -1; backend may or may not support negative quantities
-      this.cart.addItem(item.article?.id || item.articleId || item.id, -1).subscribe({ next: () => { this.load(); }, error: (e) => { console.error('decrement failed', e); this.load(); } });
+  this.cart.addItem(item.article?.id || item.articleId || item.id, -1).subscribe({ next: () => { this.load(); this.cart.getTotal().subscribe({ next: t => this.backendTotal.set(typeof t === 'number' ? t : 0), error: () => this.backendTotal.set(0) }); }, error: (e) => { console.error('decrement failed', e); this.load(); } });
     } catch (err) {
       console.error('decrement error', err);
     }
@@ -232,11 +254,12 @@ export class BasketComponent implements OnInit {
         // best-effort remove sequentially
         await new Promise<void>((res) => this.cart.removeItem(it.id || it.itemId).subscribe({ next: () => res(), error: () => res() }));
       }
-      this.snack.open('Panier vidé', 'OK', { duration: 2000 });
-      this.load();
+  this.transloco.selectTranslate('app.basket_cleared').pipe(take(1)).subscribe(msg => { this.snack.open(msg, 'OK', { duration: 2000 }); });
+  this.load();
+   this.cart.getTotal().subscribe({ next: t => this.backendTotal.set(this.parseTotal(t)), error: () => this.backendTotal.set(0) });
     } catch (err) {
       console.error('clear failed', err);
-      this.snack.open('Impossible de vider le panier', 'OK', { duration: 3000 });
+  this.transloco.selectTranslate('app.basket_clear_failed').pipe(take(1)).subscribe(msg => { this.snack.open(msg, 'OK', { duration: 3000 }); });
     }
   }
 }

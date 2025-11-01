@@ -17,6 +17,11 @@ export class BasketService {
     return from(sharedAxiosInstance.get(environment.apiBaseUrl + '/api/Basket/me').then(r => r.data));
   }
 
+  /** Get current basket total from backend */
+  getTotal(): Observable<number> {
+    return from(sharedAxiosInstance.get(environment.apiBaseUrl + '/api/Basket/me/total').then(r => r.data));
+  }
+
   addItem(articleId: number, quantity = 1): Observable<void> {
     const req = new apiClient.apiClient.AddItemRequest({ articleId, quantity });
     return from(this.client.itemsPOST(req));

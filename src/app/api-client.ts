@@ -60,6 +60,10 @@ export interface IApiClient {
      */
     me( cancelToken?: CancelToken): Promise<void>;
     /**
+     * @return OK
+     */
+    total( cancelToken?: CancelToken): Promise<void>;
+    /**
      * @param body (optional) 
      * @return OK
      */
@@ -672,6 +676,53 @@ export class ApiClient implements IApiClient {
     }
 
     protected processMe(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * @return OK
+     */
+    total( cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/Basket/me/total";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processTotal(_response);
+        });
+    }
+
+    protected processTotal(response: AxiosResponse): Promise<void> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
