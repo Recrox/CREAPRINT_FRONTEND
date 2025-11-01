@@ -58,7 +58,7 @@ export interface IApiClient {
     /**
      * @return OK
      */
-    me( cancelToken?: CancelToken): Promise<void>;
+    me( cancelToken?: CancelToken): Promise<BasketDto>;
     /**
      * @return OK
      */
@@ -652,7 +652,7 @@ export class ApiClient implements IApiClient {
     /**
      * @return OK
      */
-    me( cancelToken?: CancelToken): Promise<void> {
+    me( cancelToken?: CancelToken): Promise<BasketDto> {
         let url_ = this.baseUrl + "/api/Basket/me";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -660,6 +660,7 @@ export class ApiClient implements IApiClient {
             method: "GET",
             url: url_,
             headers: {
+                "Accept": "application/json"
             },
             cancelToken
         };
@@ -675,7 +676,7 @@ export class ApiClient implements IApiClient {
         });
     }
 
-    protected processMe(response: AxiosResponse): Promise<void> {
+    protected processMe(response: AxiosResponse): Promise<BasketDto> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -687,13 +688,16 @@ export class ApiClient implements IApiClient {
         }
         if (status === 200) {
             const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = BasketDto.fromJS(resultData200);
+            return Promise.resolve<BasketDto>(result200);
 
         } else if (status !== 200 && status !== 204) {
             const _responseText = response.data;
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<BasketDto>(null as any);
     }
 
     /**
@@ -1592,6 +1596,202 @@ export interface ILoginRequest {
     password?: string | undefined;
 }
 
+export class ArticleDto implements IArticleDto {
+    id?: number;
+    title?: string | undefined;
+    price?: number;
+    images?: ArticleImageDto[] | undefined;
+
+    constructor(data?: IArticleDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.title = _data["title"];
+            this.price = _data["price"];
+            if (Array.isArray(_data["images"])) {
+                this.images = [] as any;
+                for (let item of _data["images"])
+                    this.images!.push(ArticleImageDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ArticleDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ArticleDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["title"] = this.title;
+        data["price"] = this.price;
+        if (Array.isArray(this.images)) {
+            data["images"] = [];
+            for (let item of this.images)
+                data["images"].push(item ? item.toJSON() : undefined as any);
+        }
+        return data;
+    }
+}
+
+export interface IArticleDto {
+    id?: number;
+    title?: string | undefined;
+    price?: number;
+    images?: ArticleImageDto[] | undefined;
+}
+
+export class ArticleImageDto implements IArticleImageDto {
+    id?: number;
+    url?: string | undefined;
+    isPrimary?: boolean;
+
+    constructor(data?: IArticleImageDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.url = _data["url"];
+            this.isPrimary = _data["isPrimary"];
+        }
+    }
+
+    static fromJS(data: any): ArticleImageDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ArticleImageDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["url"] = this.url;
+        data["isPrimary"] = this.isPrimary;
+        return data;
+    }
+}
+
+export interface IArticleImageDto {
+    id?: number;
+    url?: string | undefined;
+    isPrimary?: boolean;
+}
+
+export class BasketDto implements IBasketDto {
+    id?: number;
+    items?: BasketItemDto[] | undefined;
+
+    constructor(data?: IBasketDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(BasketItemDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): BasketDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new BasketDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item ? item.toJSON() : undefined as any);
+        }
+        return data;
+    }
+}
+
+export interface IBasketDto {
+    id?: number;
+    items?: BasketItemDto[] | undefined;
+}
+
+export class BasketItemDto implements IBasketItemDto {
+    id?: number;
+    articleId?: number;
+    quantity?: number;
+    article?: ArticleDto;
+
+    constructor(data?: IBasketItemDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.articleId = _data["articleId"];
+            this.quantity = _data["quantity"];
+            this.article = _data["article"] ? ArticleDto.fromJS(_data["article"]) : undefined as any;
+        }
+    }
+
+    static fromJS(data: any): BasketItemDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new BasketItemDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["articleId"] = this.articleId;
+        data["quantity"] = this.quantity;
+        data["article"] = this.article ? this.article.toJSON() : undefined as any;
+        return data;
+    }
+}
+
+export interface IBasketItemDto {
+    id?: number;
+    articleId?: number;
+    quantity?: number;
+    article?: ArticleDto;
+}
+
 export class Article implements IArticle {
     id?: number;
     createdBy?: string | undefined;
@@ -1605,6 +1805,7 @@ export class Article implements IArticle {
     category?: Category;
     stock?: number;
     images?: ArticleImage[] | undefined;
+    translations?: ArticleTranslation[] | undefined;
 
     constructor(data?: IArticle) {
         if (data) {
@@ -1632,6 +1833,11 @@ export class Article implements IArticle {
                 this.images = [] as any;
                 for (let item of _data["images"])
                     this.images!.push(ArticleImage.fromJS(item));
+            }
+            if (Array.isArray(_data["translations"])) {
+                this.translations = [] as any;
+                for (let item of _data["translations"])
+                    this.translations!.push(ArticleTranslation.fromJS(item));
             }
         }
     }
@@ -1661,6 +1867,11 @@ export class Article implements IArticle {
             for (let item of this.images)
                 data["images"].push(item ? item.toJSON() : undefined as any);
         }
+        if (Array.isArray(this.translations)) {
+            data["translations"] = [];
+            for (let item of this.translations)
+                data["translations"].push(item ? item.toJSON() : undefined as any);
+        }
         return data;
     }
 }
@@ -1678,6 +1889,7 @@ export interface IArticle {
     category?: Category;
     stock?: number;
     images?: ArticleImage[] | undefined;
+    translations?: ArticleTranslation[] | undefined;
 }
 
 export class ArticleImage implements IArticleImage {
@@ -1754,6 +1966,82 @@ export interface IArticleImage {
     data?: string | undefined;
     mimeType?: string | undefined;
     isPrimary?: boolean;
+}
+
+export class ArticleTranslation implements IArticleTranslation {
+    id?: number;
+    createdBy?: string | undefined;
+    createdOn?: Date;
+    updatedBy?: string | undefined;
+    updatedOn?: Date | undefined;
+    articleId?: number;
+    article?: Article;
+    language!: string | undefined;
+    title!: string | undefined;
+    content!: string | undefined;
+    isDefault?: boolean;
+
+    constructor(data?: IArticleTranslation) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (this as any)[property] = (data as any)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.createdBy = _data["createdBy"];
+            this.createdOn = _data["createdOn"] ? new Date(_data["createdOn"].toString()) : undefined as any;
+            this.updatedBy = _data["updatedBy"];
+            this.updatedOn = _data["updatedOn"] ? new Date(_data["updatedOn"].toString()) : undefined as any;
+            this.articleId = _data["articleId"];
+            this.article = _data["article"] ? Article.fromJS(_data["article"]) : undefined as any;
+            this.language = _data["language"];
+            this.title = _data["title"];
+            this.content = _data["content"];
+            this.isDefault = _data["isDefault"];
+        }
+    }
+
+    static fromJS(data: any): ArticleTranslation {
+        data = typeof data === 'object' ? data : {};
+        let result = new ArticleTranslation();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["createdBy"] = this.createdBy;
+        data["createdOn"] = this.createdOn ? this.createdOn.toISOString() : undefined as any;
+        data["updatedBy"] = this.updatedBy;
+        data["updatedOn"] = this.updatedOn ? this.updatedOn.toISOString() : undefined as any;
+        data["articleId"] = this.articleId;
+        data["article"] = this.article ? this.article.toJSON() : undefined as any;
+        data["language"] = this.language;
+        data["title"] = this.title;
+        data["content"] = this.content;
+        data["isDefault"] = this.isDefault;
+        return data;
+    }
+}
+
+export interface IArticleTranslation {
+    id?: number;
+    createdBy?: string | undefined;
+    createdOn?: Date;
+    updatedBy?: string | undefined;
+    updatedOn?: Date | undefined;
+    articleId?: number;
+    article?: Article;
+    language: string | undefined;
+    title: string | undefined;
+    content: string | undefined;
+    isDefault?: boolean;
 }
 
 export class Category implements ICategory {
