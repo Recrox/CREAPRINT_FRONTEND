@@ -38,14 +38,15 @@ import * as apiClient from '../../api-client';
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let article">
-          <button mat-stroked-button color="primary" (click)="addToCart(article, $event)">
-            <mat-icon>shopping_cart</mat-icon>
-            &nbsp;Ajouter
-          </button>
-          &nbsp;
-          <button mat-icon-button color="warn" aria-label="Supprimer" (click)="delete(article, $event)">
-            <mat-icon class="delete-icon">delete</mat-icon>
-          </button>
+          <div class="actions-cell">
+            <button mat-stroked-button color="primary" (click)="addToCart(article, $event)">
+              <mat-icon>shopping_cart</mat-icon>
+              &nbsp;Ajouter
+            </button>
+            <button mat-icon-button color="warn" aria-label="Supprimer" (click)="delete(article, $event)">
+              <mat-icon class="delete-icon">delete</mat-icon>
+            </button>
+          </div>
         </td>
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -56,6 +57,8 @@ import * as apiClient from '../../api-client';
     styles: [`
       /* color delete icon red */
       .delete-icon { color: var(--mat-warn-foreground, #f44336); }
+      .actions-cell { display:flex; align-items:center; gap:8px; }
+      .actions-cell button[mat-stroked-button] { height:36px; }
     `]
 })
 export class ArticleTableComponent {
