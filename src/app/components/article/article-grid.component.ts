@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { Router } from '@angular/router';
 import { TranslocoService, TranslocoModule } from '@ngneat/transloco';
+import { take } from 'rxjs/operators';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -72,9 +73,19 @@ export class ArticleGridComponent {
         const msg = this.transloco.translate('app.added_to_cart', { title: article.title });
         this.snackBar.open(msg, undefined, { duration: 2500 });
       },
-      error: () => {
+      error: (err: any) => {
+        console.error('Add to cart failed', err);
+        // if unauthorized, prompt to login (keep message readable)
+        const status = err?.status || err?.response?.status || (err?.statusCode || null);
+        if (status === 401) {
+          this.transloco.selectTranslate('app.login', undefined).pipe(take(1)).subscribe(loginLabel => {
+            const msg = `${loginLabel} required to add to cart`;
+            this.snackBar.open(msg, loginLabel, { duration: 4000 });
+          });
+          return;
+        }
         // use selectTranslate so we wait for translations to be available
-        this.transloco.selectTranslate('app.add_failed').subscribe(msg => {
+        this.transloco.selectTranslate('app.add_failed').pipe(take(1)).subscribe(msg => {
           this.snackBar.open(msg, undefined, { duration: 3000 });
         });
       }
