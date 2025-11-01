@@ -20,6 +20,7 @@
     ,"delete_failed": "Unable to remove item"
     ,"basket_cleared": "Basket cleared"
     ,"basket_clear_failed": "Unable to clear basket"
+    ,"logout": "Logout"
   },
   "about": {
     "title": "About",

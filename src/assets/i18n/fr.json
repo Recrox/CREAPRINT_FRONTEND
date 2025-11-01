@@ -20,6 +20,7 @@
     ,"delete_failed": "Impossible de supprimer l'article"
     ,"basket_cleared": "Panier vidé"
     ,"basket_clear_failed": "Impossible de vider le panier"
+    ,"logout": "Déconnexion"
   },
   "about": {
     "title": "À propos",

@@ -20,6 +20,7 @@
     ,"delete_failed": "Löschen fehlgeschlagen"
     ,"basket_cleared": "Warenkorb geleert"
     ,"basket_clear_failed": "Konnte Warenkorb nicht leeren"
+    ,"logout": "Abmelden"
   },
   "about": {
     "title": "Über",
