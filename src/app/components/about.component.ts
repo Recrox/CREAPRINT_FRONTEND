@@ -1,23 +1,20 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
+import { TranslocoModule, TranslocoService } from '@ngneat/transloco';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-about',
   standalone: true,
-  imports: [CommonModule, MatCardModule],
+  imports: [CommonModule, MatCardModule, TranslocoModule],
   template: `
   <mat-card class="about-card" style="padding:2rem;">
-      <mat-card-title>À propos</mat-card-title>
+      <mat-card-title>{{ 'about.title' | transloco }}</mat-card-title>
       <mat-card-content>
-        <p>
-          Bienvenue sur CreaPrint ! Cette application vous permet de gérer vos articles facilement avec Angular et NSwag.
-        </p>
-        <p>
-          Version Angular: 20<br>
-          UI: Angular Material<br>
-          Backend: Swagger API via NSwag
-        </p>
+        <p>{{ 'about.welcome' | transloco }}</p>
+        <p [innerHTML]="'about.stack' | transloco"></p>
       </mat-card-content>
     </mat-card>
   `,
@@ -29,4 +26,16 @@ import { MatCardModule } from '@angular/material/card';
     }
   `]
 })
-export class AboutComponent {}
+export class AboutComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
+  constructor(public transloco: TranslocoService) {}
+
+  ngOnInit(): void {
+
+  }
+
+  ngOnDestroy(): void {
+
+  }
+}

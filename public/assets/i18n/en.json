@@ -12,8 +12,7 @@
     "login": "Login",
     "signup": "Sign up",
     "forgot_password": "Forgot password"
-  }
-  ,
+  },
   "about": {
     "title": "About",
     "welcome": "Welcome to CreaPrint! This app lets you manage your articles easily with Angular and NSwag.",

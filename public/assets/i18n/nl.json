@@ -12,8 +12,7 @@
     "login": "Inloggen",
     "signup": "Registreren",
     "forgot_password": "Wachtwoord vergeten"
-  }
-  ,
+  },
   "about": {
     "title": "Over",
     "welcome": "Welkom bij CreaPrint! Deze app laat je toe je artikelen eenvoudig te beheren met Angular en NSwag.",

@@ -12,8 +12,7 @@
     "login": "Connexion",
     "signup": "Inscription",
     "forgot_password": "Mot de passe oublié"
-  }
-  ,
+  },
   "about": {
     "title": "À propos",
     "welcome": "Bienvenue sur CreaPrint ! Cette application vous permet de gérer vos articles facilement avec Angular et NSwag.",

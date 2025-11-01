@@ -1,13 +1,23 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { translocoConfig, TranslocoLoader, provideTransloco } from '@ngneat/transloco';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 
 @Injectable()
 export class HttpTranslocoLoader implements TranslocoLoader {
   constructor(private http: HttpClient) {}
   getTranslation(lang: string): Observable<Record<string, any>> {
-    return this.http.get<Record<string, any>>(`assets/i18n/${lang}.json`);
+    const url = `assets/i18n/${lang}.json`;
+    return this.http.get<Record<string, any>>(url).pipe(
+      tap(() => console.debug(`[Transloco] loaded translations from ${url}`)),
+      catchError(err => {
+        // Log a clearer message for debugging (network / 404 / permission issues)
+        console.error(`[Transloco] Failed to load translations from ${url}:`, err);
+        // Return an empty object so the app can continue; the pipe will show keys until files are fixed
+        return of({});
+      })
+    );
   }
 }
 
@@ -16,6 +26,8 @@ export const translocoProviders = provideTransloco({
   config: {
     availableLangs: ['en', 'fr', 'de', 'nl'],
     defaultLang: 'fr',
+    // Provide a fallback language to try if the requested language fails
+    fallbackLang: 'en',
     reRenderOnLangChange: true,
     prodMode: false,
   }

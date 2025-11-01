@@ -1,8 +1,9 @@
 import { Routes } from '@angular/router';
+import { environment } from '../environments/environment';
 
 export const routes: Routes = [
-	// Redirect root to default language
-	{ path: '', pathMatch: 'full', redirectTo: 'fr' },
+	// Redirect root to default language (from environment)
+	{ path: '', pathMatch: 'full', redirectTo: environment.defaultLang },
 	// Language-prefixed routes for SEO (example: /fr/articles)
 	{
 		path: ':lang',
