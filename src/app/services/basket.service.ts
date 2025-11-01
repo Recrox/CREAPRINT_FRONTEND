@@ -28,8 +28,10 @@ export class BasketService {
   }
 
   addItem(articleId: number, quantity = 1): Observable<void> {
-    const req = new apiClient.apiClient.AddItemRequest({ articleId, quantity });
-    return from(this.client.itemsPOST(req));
+    // Some backends expect a plain JSON body with standard application/json content-type.
+    // The generated client sends "application/json-patch+json" which can cause server errors.
+    const payload = { articleId, quantity } as any;
+    return from(sharedAxiosInstance.post(environment.apiBaseUrl + '/api/Basket/me/items', payload).then(() => {}));
   }
 
   removeItem(itemId: number): Observable<void> {
