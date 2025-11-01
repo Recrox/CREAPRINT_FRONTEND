@@ -26,4 +26,19 @@
     "welcome": "Bienvenue sur CreaPrint ! Cette application vous permet de gérer vos articles facilement avec Angular et NSwag.",
     "stack": "Version Angular: 20<br>UI: Angular Material<br>Backend: Swagger API via NSwag"
   }
+
+  ,"profile": {
+    "anonymous": "Utilisateur",
+    "id": "ID",
+    "rights": "Droits",
+    "account": "Compte",
+    "accountInfo": "Informations personnelles et métadonnées du compte",
+    "username": "Nom d'utilisateur",
+    "email": "Email",
+    "passwordHash": "Mot de passe (hash)",
+    "createdOn": "Créé le",
+    "updatedOn": "Dernière modification",
+    "no_user": "Impossible de récupérer les informations utilisateur.",
+    "not_logged": "Vous n'êtes pas connecté."
+  }
 }

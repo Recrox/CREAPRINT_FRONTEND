@@ -6,6 +6,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
+import { TranslocoService, TranslocoModule } from '@ngneat/transloco';
 import { AuthStateService } from '../../services/auth-state.service';
 import * as apiClient from '../../api-client';
 import { sharedAxiosInstance, TokenService } from '../../services/http.service';
@@ -15,7 +16,7 @@ import { signal as ngSignal } from '@angular/core';
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, MatProgressSpinnerModule, MatListModule, MatIconModule],
+  imports: [CommonModule, MatCardModule, MatButtonModule, MatProgressSpinnerModule, MatListModule, MatIconModule, TranslocoModule],
   template: `
     <div class="profile-page">
       <div class="hero">
@@ -23,12 +24,12 @@ import { signal as ngSignal } from '@angular/core';
           <mat-icon>person</mat-icon>
         </div>
         <div class="hero-meta">
-          <h2 class="hero-name">{{ user()?.username || 'Utilisateur' }}</h2>
-          <p class="hero-sub">ID: {{ user()?.id ?? '—' }} • Rights: {{ rightsLabel() }}</p>
+          <h2 class="hero-name">{{ user()?.username || ('profile.anonymous' | transloco) }}</h2>
+          <p class="hero-sub">{{ 'profile.id' | transloco }}: {{ user()?.id ?? '—' }} • {{ 'profile.rights' | transloco }}: {{ rightsLabel() }}</p>
         </div>
         <div class="hero-actions">
-          <button mat-stroked-button color="primary" (click)="go('/basket')">Panier</button>
-          <button mat-flat-button color="warn" (click)="logout()">Déconnexion</button>
+          <button mat-stroked-button color="primary" (click)="go('/basket')">{{ 'app.cart' | transloco }}</button>
+          <button mat-flat-button color="warn" (click)="logout()">{{ 'app.logout' | transloco }}</button>
         </div>
       </div>
 
@@ -42,15 +43,15 @@ import { signal as ngSignal } from '@angular/core';
             <div *ngIf="!loading()">
               <div *ngIf="user(); else noUser" class="details-grid">
                 <div class="left">
-                  <h3>Compte</h3>
-                  <p class="muted">Informations personnelles et métadonnées du compte</p>
+                  <h3>{{ 'profile.account' | transloco }}</h3>
+                  <p class="muted">{{ 'profile.accountInfo' | transloco }}</p>
                 </div>
                 <div class="right">
-                  <div class="field"><span class="label">Nom d'utilisateur</span><span class="value">{{ user()?.username || '—' }}</span></div>
-                  <div class="field"><span class="label">Email</span><span class="value">{{ user()?.email || '—' }}</span></div>
-                  <div class="field"><span class="label">Droits</span><span class="value">{{ rightsLabel() }}</span></div>
+                  <div class="field"><span class="label">{{ 'profile.username' | transloco }}</span><span class="value">{{ user()?.username || '—' }}</span></div>
+                  <div class="field"><span class="label">{{ 'profile.email' | transloco }}</span><span class="value">{{ user()?.email || '—' }}</span></div>
+                  <div class="field"><span class="label">{{ 'profile.rights' | transloco }}</span><span class="value">{{ rightsLabel() }}</span></div>
                   <div class="field password-field">
-                    <span class="label">Mot de passe (hash)</span>
+                    <span class="label">{{ 'profile.passwordHash' | transloco }}</span>
                     <div class="pw-controls" [class.expanded]="showPassword()">
                       <span class="value long-text" [class.truncate]="!showPassword()" [class.expanded]="showPassword()">{{ maskedHash() }}</span>
                       <button mat-icon-button class="pw-toggle" (click)="togglePassword()" aria-label="Afficher le mot de passe">
@@ -58,18 +59,18 @@ import { signal as ngSignal } from '@angular/core';
                       </button>
                     </div>
                   </div>
-                  <div class="field"><span class="label">Créé le</span><span class="value">{{ user()?.createdOn ? (user()?.createdOn | date:'medium') : '—' }}</span></div>
-                  <div class="field"><span class="label">Dernière modification</span><span class="value">{{ user()?.updatedOn ? (user()?.updatedOn | date:'medium') : '—' }}</span></div>
+                  <div class="field"><span class="label">{{ 'profile.createdOn' | transloco }}</span><span class="value">{{ user()?.createdOn ? (user()?.createdOn | date:'medium') : '—' }}</span></div>
+                  <div class="field"><span class="label">{{ 'profile.updatedOn' | transloco }}</span><span class="value">{{ user()?.updatedOn ? (user()?.updatedOn | date:'medium') : '—' }}</span></div>
                 </div>
               </div>
               <ng-template #noUser>
-                <p>Impossible de récupérer les informations utilisateur.</p>
+                <p>{{ 'profile.no_user' | transloco }}</p>
               </ng-template>
             </div>
           </div>
           <ng-template #notLogged>
-            <p>Vous n'êtes pas connecté.</p>
-            <button mat-flat-button color="primary" (click)="go('/login')">Aller à la page de connexion</button>
+            <p>{{ 'profile.not_logged' | transloco }}</p>
+            <button mat-flat-button color="primary" (click)="go('/login')">{{ 'app.login' | transloco }}</button>
           </ng-template>
         </mat-card-content>
       </mat-card>

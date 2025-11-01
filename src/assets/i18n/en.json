@@ -27,4 +27,19 @@
     "stack": "Angular Version: 20<br>UI: Angular Material<br>Backend: Swagger API via NSwag"
   }
 
+  ,"profile": {
+    "anonymous": "User",
+    "id": "ID",
+    "rights": "Rights",
+    "account": "Account",
+    "accountInfo": "Personal information and account metadata",
+    "username": "Username",
+    "email": "Email",
+    "passwordHash": "Password (hash)",
+    "createdOn": "Created on",
+    "updatedOn": "Last modified",
+    "no_user": "Unable to retrieve user information.",
+    "not_logged": "You are not logged in."
+  }
+
 }
